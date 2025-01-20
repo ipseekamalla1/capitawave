@@ -1,5 +1,8 @@
 "use client";
 
+
+import { useRouter } from "next/navigation"; // Import useRouter hook
+
 import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -8,6 +11,8 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import CustomFormField from "../CustomFormField";
+
+
 
 export enum FormFieldType {
   INPUT = "input",
@@ -34,9 +39,15 @@ const formSchema = z.object({
   city: z.string().min(1, { message: "City is required." }),
   country: z.string().min(1, { message: "Country is required." }),
   phone: z.string().min(1, { message: "Phone number is required." }),
+})
+.refine((data) => data.password === data.repassword, {
+  message: "Passwords must match.",
+  path: ["repassword"],
 });
 
 const SignupForm = () => {
+  const router =useRouter();
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -55,8 +66,29 @@ const SignupForm = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+  
+    
+    try {
+      const response = await fetch("/api/user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create user");
+      }
+
+      const responseData = await response.json();
+      console.log("User created successfully", responseData);
+      router.push("/login");
+    } catch (error) {
+      console.error("Error:", error);
+    }
+    
   }
 
   return (
@@ -138,7 +170,7 @@ const SignupForm = () => {
             name="repassword"
             label="Re-enter Password"
             placeholder="Re-enter your password"
-          type="password"
+            type="password"
             
           />
         </div>

@@ -36,6 +36,7 @@ interface CustomProps {
   children?: React.ReactNode;
   renderSkeleton?: (field: any) => React.ReactNode;
   fieldType: FormFieldType;
+  type?: string;
 }
 
 const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
@@ -47,6 +48,7 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
       showTimeSelect,
       dateFormat,
       renderSkeleton,
+      
     } = props;
     switch (props.fieldType) {
       case FormFieldType.INPUT:
