@@ -84,17 +84,21 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
         break;
       case FormFieldType.PHONE_INPUT:
         return (
+          
           <FormControl>
-            <PhoneInput
-              defaultCountry="US"
-              placeholder={props.placeholder}
-              international
-              withCountryCallingCode
-              value={field.value as E164Number | undefined}
-              onChange={field.onChange}
-              className="shad-input border-0"
-            />
-          </FormControl>
+  <div className="flex items-center rounded-md border border-dark-500 bg-dark-400">
+    <PhoneInput
+      defaultCountry="US"
+      placeholder={props.placeholder}
+      international
+      withCountryCallingCode
+      value={field.value as E164Number | undefined}
+      onChange={field.onChange}
+      className="flex-1 shad-input border-0 bg-transparent px-3 py-2"
+    />
+  </div>
+</FormControl>
+
         );
         case FormFieldType.SELECT:
             return (
