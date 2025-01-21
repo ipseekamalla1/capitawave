@@ -10,7 +10,7 @@ const Users = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('/api/users');
+        const response = await fetch('/api/admin/users');
         if (!response.ok) {
           throw new Error('Failed to fetch users');
         }
@@ -48,9 +48,9 @@ const Users = () => {
           <table className="min-w-full bg-white border border-gray-200">
             <thead>
               <tr>
-                <th className="p-4 border-b">ID</th>
                 <th className="p-4 border-b">Email</th>
-                <th className="p-4 border-b">Created At</th>
+                <th className="p-4 border-b">Username</th>
+                <th className="p-4 border-b">Created</th>
               </tr>
             </thead>
             <tbody>
@@ -61,8 +61,9 @@ const Users = () => {
               ) : (
                 users.map((user: any) => (
                   <tr key={user.id}>
-                    <td className="p-4 border-b">{user.id}</td>
+           
                     <td className="p-4 border-b">{user.email}</td>
+                    <td className="p-4 border-b">{user.username}</td>
                     <td className="p-4 border-b">{new Date(user.createdAt).toLocaleDateString()}</td>
                   </tr>
                 ))

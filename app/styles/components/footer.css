@@ -1,0 +1,17 @@
+.custom-footer {
+    background-color: #1a202c; /* Dark background */
+    color: #ffffff;          /* Text color for a softer contrast */
+  }
+  
+  .custom-footer a {
+    color: #ffffff;          /* Link color */
+  }
+  
+  .custom-footer a:hover {
+    color: #2a32ea;          /* Hover effect for links */
+  }
+  
+  .custom-footer hr {
+    border-color: #676767;   /* Darker border for the divider */
+  }
+  

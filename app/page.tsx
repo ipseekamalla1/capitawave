@@ -1,5 +1,8 @@
 
+import Footer from "@/components/Footer";
+import HeroSlider from "@/components/HeroSlider";
 import Navbar from "@/components/Navbar";
+import BankCards from '../components/BankCards';
 export default function Home() {
   return (
     <div>
@@ -7,10 +10,11 @@ export default function Home() {
 
 
 
-<h1 className="text-6xl font-bold text-center text-gray-800">Coming soon!!!!</h1>
 
+<HeroSlider></HeroSlider>
 
-
+<BankCards></BankCards>
+<Footer></Footer>
 
 
 
