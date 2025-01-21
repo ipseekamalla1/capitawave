@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,15 +9,12 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import CustomFormField from "../CustomFormField";
-
-
-
+import Image from 'next/image'
 // Define the schema for form validation
 const loginSchema = z.object({
   email: z.string().email("Invalid email address."),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
 });
-
 
 export enum FormFieldType {
   INPUT = "input",
@@ -27,8 +24,10 @@ export enum FormFieldType {
   DATE_PICKER = "datePicker",
   SELECT = "select",
 }
+
 const LoginForm = () => {
   const router = useRouter();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for error message
 
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -39,6 +38,8 @@ const LoginForm = () => {
   });
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
+    setErrorMessage(null); // Reset the error message on each submission attempt
+
     try {
       // Call the login API
       const response = await fetch("/api/auth/login", {
@@ -52,7 +53,7 @@ const LoginForm = () => {
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Login failed:", errorData.message);
-        alert(errorData.message || "Login failed. Please try again.");
+        setErrorMessage(errorData.message || "Login failed. Please try again.");
         return;
       }
 
@@ -63,19 +64,25 @@ const LoginForm = () => {
       localStorage.setItem("token", data.token);
 
       // Redirect to user dashboard
-      router.push("/user-dashboard");
+      router.push("/client/user-dashboard");
     } catch (error) {
       console.error("Error during login:", error);
-      alert("An error occurred. Please try again.");
+      setErrorMessage("An error occurred. Please try again.");
     }
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">
-          Login
-        </h2>
+    <section className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-xl">
+         
+        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">Login</h2>
+
+        {/* Error Message */}
+        {errorMessage && (
+          <div className="text-red-600 text-center mb-4">
+            {errorMessage}
+          </div>
+        )}
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -86,6 +93,7 @@ const LoginForm = () => {
               name="email"
               label="Email Address"
               placeholder="Enter your email address"
+              className="border border-gray-300 p-3 rounded-md w-full"
             />
 
             {/* Password Field */}
@@ -96,6 +104,7 @@ const LoginForm = () => {
               label="Password"
               placeholder="Enter your password"
               type="password"
+              className="border border-gray-300 p-3 rounded-md w-full"
             />
 
             {/* Submit Button */}
@@ -120,7 +129,7 @@ const LoginForm = () => {
           </form>
         </Form>
       </div>
-    </div>
+    </section>
   );
 };
 
