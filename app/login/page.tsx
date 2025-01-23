@@ -14,7 +14,7 @@ const Login = () => {
         <div className="flex justify-center mb-6">
           <Link href='/'>
           <Image
-            src="/assets/icons/logo-full.png" // Replace with your logo path
+            src="/assets/icons/logo-full.png" 
             alt="Logo"
             width={150} // Adjust width as needed
             height={50} // Adjust height as needed
