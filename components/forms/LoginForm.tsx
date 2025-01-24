@@ -60,8 +60,10 @@ const LoginForm = () => {
       const data = await response.json();
       console.log("Login successful:", data);
 
-      // Optionally store the token in localStorage or cookies
-      localStorage.setItem("token", data.token);
+     // Store the token and user details
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+
 
       // Redirect to user dashboard
       router.push("/client/user-dashboard");

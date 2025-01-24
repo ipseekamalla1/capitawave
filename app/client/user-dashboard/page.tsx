@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React,{ useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -14,12 +14,23 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 
-import {Button} from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
+import {
+  HomeIcon,
+  ArrowRightIcon,
+  UserCircleIcon,
+  CreditCardIcon,
+  CogIcon
+
+} from "@heroicons/react/solid";
 
 // Register chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+
 const UserDashboard = () => {
+const [username, setUsername] = useState<string | null>(null);
+
   const transactions = [
     { id: 1, date: "2025-01-20", description: "Groceries", amount: -50 },
     { id: 2, date: "2025-01-19", description: "Salary", amount: 1500 },
@@ -48,47 +59,49 @@ const UserDashboard = () => {
     },
   };
 
+
+useEffect(() => {
+  // Fetch user details from localStorage
+  const storedUser = localStorage.getItem("user");
+  if (storedUser) {
+    const user = JSON.parse(storedUser);
+    setUsername(user.username); // Extract username
+  }
+}, []);
+
+
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <div className="w-1/5 bg-gray-100 text-blue-600 p-5 flex flex-col  h-screen">
+      <div className="w-1/5 bg-gray-100 text-blue-600 p-5 flex flex-col h-screen">
         {/* Logo and Dashboard Link */}
         <div className="flex items-center space-x-4 mb-7">
           <Link href="/" className="flex items-center space-x-2">
             <Image
-              src="/assets/icons/logo-full.png" 
+              src="/assets/icons/logo-full.png"
               alt="Logo"
               width={200}
               height={40}
             />
           </Link>
-         
         </div>
 
         {/* Navigation Links */}
         <nav className="flex flex-col justify-center space-y-6 text-lg p-8">
           <Link href="/dashboard" className="flex items-center space-x-2 hover:text-blue-700">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h11M9 21V3M21 21V10m0 11H9" />
-            </svg>
+            <HomeIcon className="h-6 w-6" />
             <span>Dashboard</span>
           </Link>
           <Link href="/transfer" className="flex items-center space-x-2 hover:text-blue-700">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l-7-7 7-7m8 14l-7-7 7-7" />
-            </svg>
+            <ArrowRightIcon className="h-6 w-6" />
             <span>Transfer</span>
           </Link>
           <Link href="/account" className="flex items-center space-x-2 hover:text-blue-700">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5.121 17.804A9.953 9.953 0 0112 15a9.953 9.953 0 016.879 2.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
+            <UserCircleIcon className="h-6 w-6" />
             <span>Account</span>
           </Link>
           <Link href="/cards" className="flex items-center space-x-2 hover:text-blue-700">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a4 4 0 10-8 0v2m-3 5a9 9 0 0118 0v1a9 9 0 01-18 0v-1z" />
-            </svg>
+            <CreditCardIcon className="h-6 w-6" />
             <span>Cards</span>
           </Link>
         </nav>
@@ -96,15 +109,12 @@ const UserDashboard = () => {
         {/* Settings and Logout */}
         <div className="space-y-4 p-8 mt-9">
           <Link href="/settings" className="flex items-center space-x-2 hover:text-blue-700">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v6m0-6v6m9-12h-6m6 0H9m9 0H9" />
-            </svg>
+            <CogIcon className="h-6 w-6" />
             <span>Settings</span>
           </Link>
           <Link href="/logout" className="flex items-center space-x-2 hover:text-blue-700">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 15l-4-4m0 0l4-4m-4 4h12" />
-            </svg>
+          <UserCircleIcon className="h-6 w-6" />
+
             <span>Logout</span>
           </Link>
         </div>
@@ -114,6 +124,12 @@ const UserDashboard = () => {
       <div className="flex-1 bg-gray-100 p-5">
         {/* Dashboard Header */}
         <h1 className="text-2xl font-bold mb-5">Dashboard</h1>
+        <section className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold text-gray-800">Welcome, {username || "User"}!</h1>
+        <p className="mt-4 text-gray-600">This is your dashboard. Explore and enjoy!</p>
+      </div>
+      </section>
         <Button>Create an Account</Button>
 
         {/* Dashboard Card and Chart */}
@@ -158,5 +174,3 @@ const UserDashboard = () => {
 };
 
 export default UserDashboard;
-
-
