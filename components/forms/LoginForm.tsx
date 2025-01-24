@@ -38,33 +38,27 @@ const LoginForm = () => {
   });
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
-    setErrorMessage(null); // Reset the error message on each submission attempt
-
+    setErrorMessage(null);
+  
     try {
-      // Call the login API
       const response = await fetch("/api/auth/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("Login failed:", errorData.message);
         setErrorMessage(errorData.message || "Login failed. Please try again.");
         return;
       }
-
+  
       const data = await response.json();
       console.log("Login successful:", data);
-
-     // Store the token and user details
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
-
-
+  
+      // Store the token and full user details
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user)); 
       // Redirect to user dashboard
       router.push("/client/user-dashboard");
     } catch (error) {
@@ -72,7 +66,7 @@ const LoginForm = () => {
       setErrorMessage("An error occurred. Please try again.");
     }
   }
-
+  
   return (
     <section className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-xl">

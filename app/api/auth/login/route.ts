@@ -17,25 +17,44 @@ export async function POST(req: NextRequest) {
     }
 
     // Find the user in the database
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        fname: true,
+        lname: true,
+        username: true,
+        email: true,
+        street: true,
+        state: true,
+        zip: true,
+        city: true,
+        country: true,
+        phone: true,
+        createdAt: true,
+        updatedAt: true,
+        password:true,
+      },
+    });
+
     if (!user) {
       return NextResponse.json({ message: "Invalid credentials." }, { status: 401 });
     }
 
-    // Compare the hashed password
+    // Verify the password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return NextResponse.json({ message: "Invalid credentials." }, { status: 401 });
     }
 
     // Generate JWT token
-    const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, { expiresIn: "1h" });
 
-    return NextResponse.json({ token, user: { id: user.id, email: user.email } });
+    // Return token and user data
+    return NextResponse.json({ token, user });
   } catch (error) {
     console.error("Error during login:", error);
     return NextResponse.json({ message: "Something went wrong." }, { status: 500 });
   }
 }
+

@@ -66,6 +66,7 @@ useEffect(() => {
   if (storedUser) {
     const user = JSON.parse(storedUser);
     setUsername(user.username); // Extract username
+    console.log(user.username)
   }
 }, []);
 
