@@ -11,11 +11,16 @@ import {
   CogIcon,
 } from "@heroicons/react/solid";
 
+import { useRouter } from 'next/navigation'; // Import useRouter
+
+
 const CreateAccount = () => {
   const [accountNumber, setAccountNumber] = useState('');
   const [balance, setBalance] = useState(0);
   const [accountType, setAccountType] = useState<'CHECKING' | 'SAVINGS'>('CHECKING');
   const [status, setStatus] = useState<'ACTIVE' | 'INACTIVE' | 'CLOSED'>('ACTIVE');
+  const router = useRouter(); // Initialize router
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,7 +47,7 @@ const CreateAccount = () => {
   
       const data = await response.json();
       console.log('Account created:', data);
-      alert('Account created successfully!');
+      router.push('/client/accounts/'); 
     } catch (error) {
       console.error(error);
       alert('Error creating account');
