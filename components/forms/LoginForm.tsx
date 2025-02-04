@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import CustomFormField from "../CustomFormField";
-import Image from 'next/image'
 // Define the schema for form validation
 const loginSchema = z.object({
   email: z.string().email("Invalid email address."),
@@ -56,11 +55,13 @@ const LoginForm = () => {
       const data = await response.json();
       console.log("Login successful:", data);
   
-      // Store the token and full user details
+      // Store the token, user details, and userId
       localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user)); 
-      // Redirect to user dashboard
-      router.push("/client/user-dashboard");
+      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("userId", data.user.id); // Save userId separately
+  
+      // Redirect to user dashboard with userId in URL
+      router.push(`/client/user-dashboard/${data.user.id}`);
     } catch (error) {
       console.error("Error during login:", error);
       setErrorMessage("An error occurred. Please try again.");

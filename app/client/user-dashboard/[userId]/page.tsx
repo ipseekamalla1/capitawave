@@ -124,14 +124,11 @@ useEffect(() => {
       {/* Main Content */}
       <div className="flex-1 bg-gray-100 p-5">
         {/* Dashboard Header */}
-        <h1 className="text-2xl font-bold mb-5">Dashboard</h1>
-        <section className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-800">Welcome, {username || "User"}!</h1>
-        <p className="mt-4 text-gray-600">This is your dashboard. Explore and enjoy!</p>
-      </div>
-      </section>
-        <Button>Create an Account</Button>
+        <h1 className="text-2xl font-bold mb-5">
+          Welcome, {username ? username : "User"}!
+        </h1>
+      
+        <Link href="/client/create-account"><Button>Create an Account</Button></Link>
 
         {/* Dashboard Card and Chart */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

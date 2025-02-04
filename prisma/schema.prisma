@@ -14,6 +14,17 @@ datasource db {
 }
 
 
+enum AccountType {
+  CHECKING
+  SAVINGS
+}
+
+enum AccountStatus {
+  ACTIVE
+  INACTIVE
+  CLOSED
+}
+
 model User {
   id         String   @id @default(uuid()) // Automatically generated UUID
   fname      String
@@ -29,4 +40,19 @@ model User {
   phone      String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  accounts   Account[] // One-to-many relationship: A user can have multiple accounts
+}
+
+model Account {
+  id          String       @id @default(uuid()) // Account UUID
+  accountNumber String     @unique // Unique account number
+  balance     Float        @default(0) // Current account balance
+  accountType AccountType  // Type of account (CHECKING or SAVINGS)
+  createdAt   DateTime     @default(now()) // Date the account was created
+  closedAt    DateTime?    // Date the account was closed, nullable
+  status      AccountStatus // Account status (ACTIVE, INACTIVE, or CLOSED)
+
+  userId      String       // Foreign key to the User table
+  user        User         @relation(fields: [userId], references: [id]) 
 }
