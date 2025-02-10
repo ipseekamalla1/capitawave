@@ -1,23 +1,99 @@
+/* Hero Slider container */
 .hero-slider {
-    width: 100%;
-    height: 80vh;
-  }
-  
-  .hero-slider .swiper-button-next,
-  .hero-slider .swiper-button-prev {
-    color: white; /* Arrow color */
-  }
-  
-  .hero-slider .swiper-pagination-bullet {
-    background-color: rgba(255, 255, 255, 0.7); /* Pagination bullet color */
-  }
-  
-  .hero-slider .swiper-pagination-bullet-active {
-    background-color: #0070f3; /* Active bullet color */
-  }
-  
+  width: 100%;
+  height: 120vh;
+  position: relative;
+  overflow: hidden;
+}
 
-  .hero-slider div {
-    transition: opacity 0.7s ease-in-out;
-  }
-  
+/* Slide transitions */
+.hero-slider div {
+  transition: opacity 0.7s ease-in-out;
+}
+
+/* Right-side image/illustration transition */
+.hero-slider .illustration {
+  transition: transform 0.5s ease-in-out;
+  opacity: 0;
+}
+
+/* Active state for the illustration (visible on the first slide) */
+.hero-slider .illustration.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Pagination Dots */
+.hero-slider .swiper-pagination-bullet {
+  background-color: rgba(255, 255, 255, 0.7); /* Pagination bullet color */
+}
+
+.hero-slider .swiper-pagination-bullet-active {
+  background-color: #0070f3; /* Active bullet color */
+}
+
+/* Navigation arrows */
+.hero-slider .swiper-button-next,
+.hero-slider .swiper-button-prev {
+  color: white; /* Arrow color */
+}
+
+/* Style for the left side text content */
+.hero-slider .left-side-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 50%;
+  padding-left: 1rem;
+  z-index: 10;
+}
+
+/* Style for heading and text */
+.hero-slider .left-side-content h1 {
+  font-size: 3rem; /* Adjust size as needed */
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.hero-slider .left-side-content p {
+  font-size: 1.25rem; /* Adjust size as needed */
+  margin-bottom: 1.5rem;
+}
+
+/* Style for the button */
+.hero-slider .left-side-content a {
+  background-color: #0070f3;
+  color: white;
+  padding: 1rem 2rem;
+  text-align: center;
+  font-size: 1.125rem;
+  font-weight: medium;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.hero-slider .left-side-content a:hover {
+  background-color: #005bb5;
+}
+
+/* Right side image/illustration styling */
+.hero-slider .right-side-content {
+  position: absolute;
+  right: 4rem;
+  bottom: 4rem;
+  opacity: 0;
+  transform: translateX(100px);
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.hero-slider .right-side-content img {
+  width: 15rem;
+  height: auto;
+  object-fit: contain;
+}
+
+.hero-slider .right-side-content.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+

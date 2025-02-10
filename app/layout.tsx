@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono,PT_Serif } from "next/font/google";
 import "./globals.css";
+
+const ptSerif = PT_Serif({ weight: ["400", "700"], subsets: ["latin"] });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,11 +26,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+       
+      </head>
+       <body className={ptSerif.className}>{children}</body>
     </html>
   );
 }
