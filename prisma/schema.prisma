@@ -13,16 +13,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 enum AccountType {
   CHECKING
   SAVINGS
+  CREDIT
 }
 
 enum AccountStatus {
   ACTIVE
   INACTIVE
   CLOSED
+  
 }
 
 model User {

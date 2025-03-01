@@ -74,7 +74,7 @@ const AccountsPage = () => {
         ) : (
           <div className="flex">
             {/* Scrollable Account Cards */}
-            <div className="flex-1 overflow-x-auto whitespace-nowrap space-x-4 p-4 flex">
+            <div className="flex-1 overflow-x-auto whitespace-nowrap space-y-4 p-4 flex flex-col">
               {accounts.length === 0 ? (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -91,8 +91,11 @@ const AccountsPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.1 }}
                     whileHover={{ scale: 1.02 }}
-                    className="bg-white rounded-xl shadow-lg p-6 transform transition-all duration-300 w-80 inline-block cursor-pointer"
-                  >
+                    className={`rounded-xl shadow-lg p-6 transform transition-all duration-300 w-80 inline-block cursor-pointer ${
+                      account.accountType === 'SAVINGS' ? 'bg-gradient-to-r from-slate-50 to-green-300' : 
+                      account.accountType === 'CHECKING' ? 'bg-gradient-to-r from-slate-50 to-indigo-300' : 
+                      'bg-gradient-to-r from-slate-50 to-yellow-300'
+                    }`}                  >
                     <div className="flex items-center justify-between mb-4">
                       <motion.span
                         whileHover={{ scale: 1.05 }}
@@ -129,7 +132,7 @@ const AccountsPage = () => {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => setSelectedAccount(account)}
-                        className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
+                        className="w-full py-2 px-4 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors duration-200"
                       >
                         View Details
                       </motion.button>
