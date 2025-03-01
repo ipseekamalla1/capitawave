@@ -24,6 +24,7 @@ import {
 
 } from "@heroicons/react/solid";
 
+import UserSidebar  from "@/components/user-dashboard/UserSidebar"
 // Register chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -120,6 +121,7 @@ useEffect(() => {
           </Link>
         </div>
       </div>
+     <UserSidebar></UserSidebar>
 
       {/* Main Content */}
       <div className="flex-1 bg-gray-100 p-5">
