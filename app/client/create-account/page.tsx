@@ -33,10 +33,12 @@ const CreateAccount = () => {
     const accountData = {
       accountNumber: generateAccountNumber(),
       accountType,
-      amount,
-      isActive,
+      balance: parseFloat(amount) || 0, // Convert string to float
+      status: isActive ? 'ACTIVE' : 'INACTIVE',
       userId: user.id,
     };
+    
+    
 
     try {
       const response = await fetch('/api/admin/accounts', {

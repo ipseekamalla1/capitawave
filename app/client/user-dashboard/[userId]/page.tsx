@@ -1,6 +1,6 @@
 "use client";
 
-import React,{ useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -15,22 +15,13 @@ import {
 import { Bar } from "react-chartjs-2";
 
 import { Button } from "@/components/ui/button";
-import {
-  HomeIcon,
-  ArrowRightIcon,
-  UserCircleIcon,
-  CreditCardIcon,
-  CogIcon
+import UserSidebar from "@/components/user-dashboard/UserSidebar";
 
-} from "@heroicons/react/solid";
-
-import UserSidebar  from "@/components/user-dashboard/UserSidebar"
 // Register chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-
 const UserDashboard = () => {
-const [username, setUsername] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
 
   const transactions = [
     { id: 1, date: "2025-01-20", description: "Groceries", amount: -50 },
@@ -60,80 +51,30 @@ const [username, setUsername] = useState<string | null>(null);
     },
   };
 
-
-useEffect(() => {
-  // Fetch user details from localStorage
-  const storedUser = localStorage.getItem("user");
-  if (storedUser) {
-    const user = JSON.parse(storedUser);
-    setUsername(user.username); // Extract username
-    console.log(user.username)
-  }
-}, []);
-
+  useEffect(() => {
+    // Fetch user details from localStorage
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      setUsername(user.username); // Extract username
+    }
+  }, []);
 
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <div className="w-1/5 bg-gray-100 text-blue-600 p-5 flex flex-col h-screen">
-        {/* Logo and Dashboard Link */}
-        <div className="flex items-center space-x-4 mb-7">
-          <Link href="/" className="flex items-center space-x-2">
-            <Image
-              src="/assets/icons/logo-full.png"
-              alt="Logo"
-              width={200}
-              height={40}
-            />
-          </Link>
-        </div>
+      <UserSidebar />
 
-        {/* Navigation Links */}
-        <nav className="flex flex-col justify-center space-y-6 text-lg p-8">
-          <Link href="/dashboard" className="flex items-center space-x-2 hover:text-blue-700">
-            <HomeIcon className="h-6 w-6" />
-            <span>Dashboard</span>
-          </Link>
-          <Link href="/transfer" className="flex items-center space-x-2 hover:text-blue-700">
-            <ArrowRightIcon className="h-6 w-6" />
-            <span>Transfer</span>
-          </Link>
-          <Link href="/account" className="flex items-center space-x-2 hover:text-blue-700">
-            <UserCircleIcon className="h-6 w-6" />
-            <span>Account</span>
-          </Link>
-          <Link href="/cards" className="flex items-center space-x-2 hover:text-blue-700">
-            <CreditCardIcon className="h-6 w-6" />
-            <span>Cards</span>
-          </Link>
-        </nav>
-
-        {/* Settings and Logout */}
-        <div className="space-y-4 p-8 mt-9">
-          <Link href="/settings" className="flex items-center space-x-2 hover:text-blue-700">
-            <CogIcon className="h-6 w-6" />
-            <span>Settings</span>
-          </Link>
-          <Link href="/logout" className="flex items-center space-x-2 hover:text-blue-700">
-          <UserCircleIcon className="h-6 w-6" />
-
-            <span>Logout</span>
-          </Link>
-        </div>
-      </div>
-     <UserSidebar></UserSidebar>
-
-      {/* Main Content */}
+      {/* Main Dashboard Content */}
       <div className="flex-1 bg-gray-100 p-5">
-        {/* Dashboard Header */}
-        <h1 className="text-2xl font-bold mb-5">
-          Welcome, {username ? username : "User"}!
-        </h1>
-      
-        <Link href="/client/create-account"><Button>Create an Account</Button></Link>
+        <h1 className="text-2xl font-bold mb-5">Welcome, {username ? username : "User"}!</h1>
+
+        <Link href="/client/create-account">
+          <Button>Create an Account</Button>
+        </Link>
 
         {/* Dashboard Card and Chart */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
           {/* Card */}
           <div className="bg-white shadow-lg rounded-lg p-5 text-center col-span-1 md:col-span-2">
             <h2 className="text-xl font-bold mb-2">Welcome Back!</h2>
@@ -155,11 +96,7 @@ useEffect(() => {
                 <li key={transaction.id} className="flex justify-between py-2">
                   <span>{transaction.date}</span>
                   <span>{transaction.description}</span>
-                  <span
-                    className={
-                      transaction.amount > 0 ? "text-green-500" : "text-red-500"
-                    }
-                  >
+                  <span className={transaction.amount > 0 ? "text-green-500" : "text-red-500"}>
                     {transaction.amount > 0 ? "+" : ""}
                     {transaction.amount} USD
                   </span>
