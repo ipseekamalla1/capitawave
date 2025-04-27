@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
         createdAt: true,
         updatedAt: true,
         password:true,
+        role: true, 
       },
     });
 

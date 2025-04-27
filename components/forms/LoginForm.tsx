@@ -59,9 +59,18 @@ const LoginForm = () => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("userId", data.user.id); // Save userId separately
-  
-      // Redirect to user dashboard with userId in URL
-      router.push(`/client/user-dashboard/${data.user.id}`);
+      localStorage.setItem("userRole", data.user.role);
+
+      // Redirect based on role
+      if (data.user.role === "ADMIN") {
+        router.push("/admin");
+      } else if (data.user.role === "CLIENT") {
+        router.push(`/client/user-dashboard/${data.user.id}`);
+      } else {
+        setErrorMessage("Unknown role. Please contact support.");
+      }
+    
+    
     } catch (error) {
       console.error("Error during login:", error);
       setErrorMessage("An error occurred. Please try again.");
