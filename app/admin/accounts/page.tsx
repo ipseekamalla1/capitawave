@@ -4,8 +4,13 @@ import React, { useEffect, useState } from 'react';
 import NavbarAside from '@/components/admin/NavbarAside';
 import { Button } from '@/components/ui/Button';
 import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
-import Modal from "@/components/Modal"; // Import a modal component
+import Modal from "@/components/Modal";
 
+interface User {
+  id: string;
+  fname: string;
+  lname: string;
+}
 
 interface Account {
   id: string;
@@ -28,12 +33,23 @@ interface SortConfig {
 
 const Accounts: React.FC = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 5;
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'createdAt', direction: 'desc' });
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  // Form states
+  const [newAccount, setNewAccount] = useState({
+    accountNumber: '',
+    accountType: 'CHECKING',
+    balance: '',
+    status: 'ACTIVE',
+    userId: '',
+  });
 
   useEffect(() => {
     const fetchAccounts = async () => {
@@ -48,7 +64,18 @@ const Accounts: React.FC = () => {
       }
     };
 
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch('/api/admin/users');
+        const data = await res.json();
+        setUsers(data);
+      } catch (error) {
+        console.error('Failed to fetch users:', error);
+      }
+    };
+
     fetchAccounts();
+    fetchUsers();
   }, []);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,34 +94,68 @@ const Accounts: React.FC = () => {
     setSelectedAccount(account);
   };
 
-  // Filtered & Sorted
-  const filteredAccounts = accounts
-  .filter((acc) => {
-    const query = searchQuery.toLowerCase();
-    return (
-      acc.accountNumber.toLowerCase().includes(query) ||
-      `${acc.user.fname} ${acc.user.lname}`.toLowerCase().includes(query) ||
-      acc.accountType.toLowerCase().includes(query) ||
-      acc.status.toLowerCase().includes(query) ||
-      acc.balance.toString().includes(query) ||
-      new Date(acc.createdAt).toLocaleDateString().toLowerCase().includes(query)
-    );
-  })
-  .sort((a, b) => {
-    let aValue: any, bValue: any;
-    if (sortConfig.key === 'name') {
-      aValue = `${a.user.fname} ${a.user.lname}`.toLowerCase();
-      bValue = `${b.user.fname} ${b.user.lname}`.toLowerCase();
-    } else {
-      aValue = a[sortConfig.key];
-      bValue = b[sortConfig.key];
+  const handleAddAccount = async () => {
+    try {
+      const res = await fetch('/api/admin/accounts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...newAccount,
+          balance: parseFloat(newAccount.balance), // Ensure balance is a float
+        }),
+      });
+  
+      if (res.ok) {
+        const newAcc = await res.json(); // Expect the response to include user details as well
+  
+        // Update accounts state with the newly created account (including user data)
+        setAccounts((prev) => [...prev, newAcc]);
+  
+        // Close modal and reset the form
+        setShowAddModal(false);
+        setNewAccount({
+          accountNumber: '',
+          accountType: 'CHECKING',
+          balance: '',
+          status: 'ACTIVE',
+          userId: '', // Assuming you select the user ID from the form
+        });
+      } else {
+        console.error('Failed to create account');
+      }
+    } catch (error) {
+      console.error('Error creating account:', error);
     }
+  };
+  
 
-    if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
-    if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
-    return 0;
-  });
+  // Filter & Sort
+  const filteredAccounts = accounts
+    .filter((acc) => {
+      const query = searchQuery.toLowerCase();
+      return (
+        acc.accountNumber.toLowerCase().includes(query) ||
+        `${acc.user.fname} ${acc.user.lname}`.toLowerCase().includes(query) ||
+        acc.accountType.toLowerCase().includes(query) ||
+        acc.status.toLowerCase().includes(query) ||
+        acc.balance.toString().includes(query) ||
+        new Date(acc.createdAt).toLocaleDateString().toLowerCase().includes(query)
+      );
+    })
+    .sort((a, b) => {
+      let aValue: any, bValue: any;
+      if (sortConfig.key === 'name') {
+        aValue = `${a.user.fname} ${a.user.lname}`.toLowerCase();
+        bValue = `${b.user.fname} ${b.user.lname}`.toLowerCase();
+      } else {
+        aValue = a[sortConfig.key];
+        bValue = b[sortConfig.key];
+      }
 
+      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
 
   // Pagination
   const indexOfLast = currentPage * usersPerPage;
@@ -105,6 +166,7 @@ const Accounts: React.FC = () => {
   return (
     <NavbarAside>
       <h2 className="text-2xl font-semibold mb-6">Accounts</h2>
+
       <div className="mb-6 flex items-center space-x-4">
         <input
           type="text"
@@ -113,7 +175,7 @@ const Accounts: React.FC = () => {
           placeholder="Search by name or account number"
           className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <Button className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition text-sm">
+        <Button onClick={() => setShowAddModal(true)} className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition text-sm">
           <FaEdit className="mr-2" /> Add New Account
         </Button>
       </div>
@@ -167,7 +229,6 @@ const Accounts: React.FC = () => {
             </table>
           </div>
 
-          {/* Pagination Controls */}
           <div className="mt-4 flex justify-between items-center">
             <Button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="text-sm bg-gray-300 hover:bg-gray-400 px-3 py-1 rounded">
               Prev
@@ -179,49 +240,80 @@ const Accounts: React.FC = () => {
           </div>
         </>
       )}
-      {/* Modal for viewing account details */}
-{selectedAccount && (
-  <Modal onClose={() => setSelectedAccount(null)}>
-    <div className="p-4">
-      <h3 className="text-xl font-semibold">Account Details</h3>
-      <div className="mt-4 space-y-2">
-        <p>
-          <strong>Account Number:</strong> {selectedAccount.accountNumber}
-        </p>
-        <p>
-          <strong>Account Type:</strong> {selectedAccount.accountType}
-        </p>
-        <p>
-          <strong>Balance:</strong>{' '}
-          <span className={selectedAccount.balance < 0 ? 'text-red-600' : 'text-green-600'}>
-            ${selectedAccount.balance.toFixed(2)}
-          </span>
-        </p>
-        <p>
-          <strong>Status:</strong> {selectedAccount.status}
-        </p>
-        <p>
-          <strong>Created At:</strong>{' '}
-          {new Date(selectedAccount.createdAt).toLocaleDateString()}
-        </p>
-        {selectedAccount.closedAt && (
-          <p>
-            <strong>Closed At:</strong>{' '}
-            {new Date(selectedAccount.closedAt).toLocaleDateString()}
-          </p>
-        )}
-        <hr className="my-2" />
-        <p>
-          <strong>User First Name:</strong> {selectedAccount.user.fname}
-        </p>
-        <p>
-          <strong>User Last Name:</strong> {selectedAccount.user.lname}
-        </p>
-      </div>
-    </div>
-  </Modal>
-)}
 
+      {selectedAccount && (
+        <Modal onClose={() => setSelectedAccount(null)}>
+          <div className="p-4">
+            <h3 className="text-xl font-semibold">Account Details</h3>
+            <div className="mt-4 space-y-2">
+              <p><strong>Account Number:</strong> {selectedAccount.accountNumber}</p>
+              <p><strong>Account Type:</strong> {selectedAccount.accountType}</p>
+              <p><strong>Balance:</strong> ${selectedAccount.balance.toFixed(2)}</p>
+              <p><strong>Status:</strong> {selectedAccount.status}</p>
+              <p><strong>Created At:</strong> {new Date(selectedAccount.createdAt).toLocaleDateString()}</p>
+              {selectedAccount.closedAt && <p><strong>Closed At:</strong> {new Date(selectedAccount.closedAt).toLocaleDateString()}</p>}
+              <hr className="my-2" />
+              <p><strong>User First Name:</strong> {selectedAccount.user.fname}</p>
+              <p><strong>User Last Name:</strong> {selectedAccount.user.lname}</p>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {showAddModal && (
+        <Modal onClose={() => setShowAddModal(false)}>
+          <div className="p-4">
+            <h3 className="text-lg font-semibold mb-4">Add New Account</h3>
+            <div className="space-y-3">
+              <input
+                type="text"
+                placeholder="Account Number"
+                value={newAccount.accountNumber}
+                onChange={(e) => setNewAccount({ ...newAccount, accountNumber: e.target.value })}
+                className="w-full border p-2 rounded"
+              />
+              <select
+                value={newAccount.accountType}
+                onChange={(e) => setNewAccount({ ...newAccount, accountType: e.target.value as any })}
+                className="w-full border p-2 rounded"
+              >
+                <option value="CHECKING">CHECKING</option>
+                <option value="SAVINGS">SAVINGS</option>
+                <option value="CREDIT">CREDIT</option>
+              </select>
+              <input
+                type="number"
+                placeholder="Balance"
+                value={newAccount.balance}
+                onChange={(e) => setNewAccount({ ...newAccount, balance: e.target.value })}
+                className="w-full border p-2 rounded"
+              />
+              <select
+                value={newAccount.status}
+                onChange={(e) => setNewAccount({ ...newAccount, status: e.target.value as any })}
+                className="w-full border p-2 rounded"
+              >
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="INACTIVE">INACTIVE</option>
+                <option value="CLOSED">CLOSED</option>
+              </select>
+              <select
+                value={newAccount.userId}
+                onChange={(e) => setNewAccount({ ...newAccount, userId: e.target.value })}
+                className="w-full border p-2 rounded"
+              >
+                <option value="">Select User</option>
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.fname} {user.lname}
+                  </option>
+                ))}
+              </select>
+              <Button onClick={handleAddAccount} className="bg-blue-500 text-white w-full py-2 rounded hover:bg-blue-600">Submit</Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </NavbarAside>
   );
 };
