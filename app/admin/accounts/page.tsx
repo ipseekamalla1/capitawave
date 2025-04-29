@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import NavbarAside from '@/components/admin/NavbarAside';
 import { Button } from '@/components/ui/Button';
 import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
+import Modal from "@/components/Modal"; // Import a modal component
+
 
 interface Account {
   id: string;
@@ -63,7 +65,6 @@ const Accounts: React.FC = () => {
 
   const handleView = (account: Account) => {
     setSelectedAccount(account);
-    alert(`Viewing account: ${account.accountNumber}`); // Replace with a modal or route
   };
 
   // Filtered & Sorted
@@ -178,6 +179,49 @@ const Accounts: React.FC = () => {
           </div>
         </>
       )}
+      {/* Modal for viewing account details */}
+{selectedAccount && (
+  <Modal onClose={() => setSelectedAccount(null)}>
+    <div className="p-4">
+      <h3 className="text-xl font-semibold">Account Details</h3>
+      <div className="mt-4 space-y-2">
+        <p>
+          <strong>Account Number:</strong> {selectedAccount.accountNumber}
+        </p>
+        <p>
+          <strong>Account Type:</strong> {selectedAccount.accountType}
+        </p>
+        <p>
+          <strong>Balance:</strong>{' '}
+          <span className={selectedAccount.balance < 0 ? 'text-red-600' : 'text-green-600'}>
+            ${selectedAccount.balance.toFixed(2)}
+          </span>
+        </p>
+        <p>
+          <strong>Status:</strong> {selectedAccount.status}
+        </p>
+        <p>
+          <strong>Created At:</strong>{' '}
+          {new Date(selectedAccount.createdAt).toLocaleDateString()}
+        </p>
+        {selectedAccount.closedAt && (
+          <p>
+            <strong>Closed At:</strong>{' '}
+            {new Date(selectedAccount.closedAt).toLocaleDateString()}
+          </p>
+        )}
+        <hr className="my-2" />
+        <p>
+          <strong>User First Name:</strong> {selectedAccount.user.fname}
+        </p>
+        <p>
+          <strong>User Last Name:</strong> {selectedAccount.user.lname}
+        </p>
+      </div>
+    </div>
+  </Modal>
+)}
+
     </NavbarAside>
   );
 };
