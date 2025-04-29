@@ -64,7 +64,7 @@ const LoginForm = () => {
       // Redirect based on role
       if (data.user.role === "ADMIN") {
         router.push("/admin");
-      } else if (data.user.role === "CLIENT") {
+      } else if (data.user.role === "USER") {
         router.push(`/client/user-dashboard/${data.user.id}`);
       } else {
         setErrorMessage("Unknown role. Please contact support.");
