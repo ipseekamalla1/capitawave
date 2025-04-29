@@ -91,6 +91,7 @@ const Users = () => {
   const handleUpdateUser = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+    
   
     const updatedUser = {
       fname: formData.get('fname'),
@@ -106,7 +107,7 @@ const Users = () => {
       phone: formData.get('phone'),
       role: formData.get('role'),
     };
-  
+  console.log(updatedUser)
     try {
       const response = await fetch(`/api/admin/users/${userToEdit.id}`, {
         method: 'PUT',
@@ -397,7 +398,7 @@ const Users = () => {
           <input type="text" name="lname" defaultValue={userToEdit.lname} className="p-2 w-full border rounded" required />
           <input type="email" name="email" defaultValue={userToEdit.email} className="p-2 w-full border rounded" required />
           <input type="text" name="username" defaultValue={userToEdit.username} className="p-2 w-full border rounded" required />
-          <input type="password" name="password" placeholder="New Password" className="p-2 w-full border rounded" />
+          <input type="password" name="password" defaultValue={userToEdit.password} className="p-2 w-full border rounded" />
           <input type="text" name="phone" defaultValue={userToEdit.phone} className="p-2 w-full border rounded" />
           <input type="text" name="street" defaultValue={userToEdit.street} className="p-2 w-full border rounded" />
           <input type="text" name="city" defaultValue={userToEdit.city} className="p-2 w-full border rounded" />
