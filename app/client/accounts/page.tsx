@@ -42,7 +42,7 @@ const AccountsPage = () => {
           return;
         }
 
-        const response = await fetch(`/api/admin/display-acc?userId=${user.id}`);
+        const response = await fetch(`/api/client/display-acc?userId=${user.id}`);
         if (!response.ok) {
           throw new Error('Failed to fetch accounts');
         }

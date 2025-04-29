@@ -41,7 +41,7 @@ const CreateAccount = () => {
     
 
     try {
-      const response = await fetch('/api/admin/accounts', {
+      const response = await fetch('/api/client/accounts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(accountData),
