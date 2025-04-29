@@ -5,6 +5,8 @@ import NavbarAside from '@/components/admin/NavbarAside';
 import { FaEdit, FaTrash, FaEye } from 'react-icons/fa';
 import { Button } from "@/components/ui/button";
 import Modal from "@/components/Modal"; // Import a modal component
+import toast from 'react-hot-toast';
+
 
 const Users = () => {
   const [users, setUsers] = useState<any[]>([]);
@@ -74,6 +76,8 @@ const Users = () => {
         const createdUser = await response.json();
         setUsers((prev) => [...prev, createdUser]); // Update your user list immediately
         setShowAddUserModal(false); // Close the modal
+        toast.success('User added successfully!');
+
       } else {
         throw new Error('Failed to create user');
       }
@@ -122,6 +126,8 @@ const Users = () => {
         );
         setShowEditUserModal(false);
         setUserToEdit(null);
+        toast.success('User updated successfully!');
+
       } else {
         throw new Error('Failed to update user');
       }
@@ -144,6 +150,8 @@ const Users = () => {
 
       if (response.ok) {
         setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+        toast.success('User deleted successfully!');
+
       } else {
         throw new Error('Failed to delete user');
       }

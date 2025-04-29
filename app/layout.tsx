@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono,PT_Serif } from "next/font/google";
 import "./globals.css";
+import { Toaster } from 'react-hot-toast';
 
 const ptSerif = PT_Serif({ weight: ["400", "700"], subsets: ["latin"] });
 
@@ -31,7 +32,10 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" />
        
       </head>
-       <body className={ptSerif.className}>{children}</body>
+       <body className={ptSerif.className}>{children}
+       <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+
+       </body>
     </html>
   );
 }
