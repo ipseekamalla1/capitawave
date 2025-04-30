@@ -23,44 +23,86 @@ enum AccountStatus {
   ACTIVE
   INACTIVE
   CLOSED
-  
 }
+
 enum Role {
   USER
   ADMIN
 }
 
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  TRANSFER
+  EXTERNAL
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REVERSED
+}
 
 model User {
-  id         String   @id @default(uuid()) // Automatically generated UUID
-  fname      String
-  lname      String
-  username   String   @unique
-  email      String   @unique
-  password   String
-  street     String
-  state      String
-  zip        String
-  city       String
-  country    String
-  phone      String
-    role       Role     @default(USER) // New field with default value
+  id           String        @id @default(uuid())
+  fname        String
+  lname        String
+  username     String        @unique
+  email        String        @unique
+  password     String
+  street       String
+  state        String
+  zip          String
+  city         String
+  country      String
+  phone        String
+  role         Role          @default(USER)
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
-  accounts   Account[] // One-to-many relationship: A user can have multiple accounts
+  accounts     Account[]
+  sentTransactions     Transaction[] @relation("Sender")
+  receivedTransactions Transaction[] @relation("Recipient")
 }
 
 model Account {
-  id          String       @id @default(uuid()) // Account UUID
-  accountNumber String     @unique // Unique account number
-  balance     Float        @default(0) // Current account balance
-  accountType AccountType  // Type of account (CHECKING or SAVINGS)
-  createdAt   DateTime     @default(now()) // Date the account was created
-  closedAt    DateTime?    // Date the account was closed, nullable
-  status      AccountStatus // Account status (ACTIVE, INACTIVE, or CLOSED)
+  id             String        @id @default(uuid())
+  accountNumber  String        @unique
+  balance        Float         @default(0)
+  accountType    AccountType
+  createdAt      DateTime      @default(now())
+  closedAt       DateTime?
+  status         AccountStatus
 
-  userId      String       // Foreign key to the User table
-  user        User         @relation(fields: [userId], references: [id]) 
+  userId         String
+  user           User          @relation(fields: [userId], references: [id])
+
+  transactions   Transaction[]
+}
+
+model Transaction {
+  id               String            @id @default(uuid())
+  amount           Float
+  type             TransactionType
+  status           TransactionStatus @default(PENDING)
+  description      String?
+  createdAt        DateTime          @default(now())
+
+  // Sender account
+  accountId        String
+  account          Account           @relation(fields: [accountId], references: [id])
+
+  // Sender user (just for quick access)
+  senderUserId     String
+  senderUser       User              @relation("Sender", fields: [senderUserId], references: [id])
+
+  // Recipient user (for internal transfers)
+  recipientUserId  String?
+  recipientUser    User?             @relation("Recipient", fields: [recipientUserId], references: [id])
+
+  // Optional external reference (no relation for now)
+  externalBankName     String?
+  externalAccountNumber String?
 }

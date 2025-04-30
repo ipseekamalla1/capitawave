@@ -5,6 +5,8 @@ import NavbarAside from '@/components/admin/NavbarAside';
 import { Button } from '@/components/ui/Button';
 import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 import Modal from "@/components/Modal";
+import toast from "react-hot-toast";
+
 
 interface User {
   id: string;
@@ -41,6 +43,9 @@ const Accounts: React.FC = () => {
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'createdAt', direction: 'desc' });
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false); // Add state for Edit modal
+  const [editedAccount, setEditedAccount] = useState<Account | null>(null); // Add state for edited account
+
 
   // Form states
   const [newAccount, setNewAccount] = useState({
@@ -113,6 +118,8 @@ const Accounts: React.FC = () => {
   
         // Close modal and reset the form
         setShowAddModal(false);
+        toast.success("Account added successfully!");
+
         setNewAccount({
           accountNumber: '',
           accountType: 'CHECKING',
@@ -127,7 +134,58 @@ const Accounts: React.FC = () => {
       console.error('Error creating account:', error);
     }
   };
+  const handleEditAccount = async () => {
+    try {
+      if (!editedAccount) return;
   
+      const res = await fetch(`/api/admin/accounts/${editedAccount.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          accountNumber: editedAccount.accountNumber, // Add the necessary fields
+          accountType: editedAccount.accountType,     // Add the necessary fields
+          balance: parseFloat(editedAccount.balance.toString()), // Ensure balance is a float
+          status: editedAccount.status,               // Add the status
+                         // Add last name
+        }),
+      });
+  
+      if (res.ok) {
+        const updatedAccount = await res.json();
+        console.log('Updated Account:', updatedAccount); // Check the account data
+        setAccounts((prev) =>
+          prev.map((acc) => (acc.id === updatedAccount.id ? updatedAccount : acc))
+        );
+        setShowEditModal(false);
+        toast.success("Account edited successfully!");
+
+      } else {
+        console.error('Failed to update account');
+      }
+    } catch (error) {
+      console.error('Error updating account:', error);
+    }
+  };
+  
+  
+
+  const handleDeleteAccount = async (id: string) => {
+    try {
+      const res = await fetch(`/api/admin/accounts/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (res.ok) {
+        setAccounts((prev) => prev.filter((account) => account.id !== id));
+        toast.success("Account deleted successfully!");
+
+      } else {
+        console.error('Failed to delete account');
+      }
+    } catch (error) {
+      console.error('Error deleting account:', error);
+    }
+  };
 
   // Filter & Sort
   const filteredAccounts = accounts
@@ -172,7 +230,7 @@ const Accounts: React.FC = () => {
           type="text"
           value={searchQuery}
           onChange={handleSearch}
-          placeholder="Search by name or account number"
+          placeholder="Search accounts..."
           className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <Button onClick={() => setShowAddModal(true)} className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition text-sm">
@@ -213,10 +271,10 @@ const Accounts: React.FC = () => {
                     <td className="p-4">{account.status}</td>
                     <td className="p-4">{new Date(account.createdAt).toLocaleDateString()}</td>
                     <td className="p-4 space-x-2">
-                      <Button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm">
+                      <Button onClick={() => { setEditedAccount(account); setShowEditModal(true); }} className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm">
                         <FaEdit />
                       </Button>
-                      <Button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm">
+                      <Button onClick={() => handleDeleteAccount(account.id)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm">
                         <FaTrash />
                       </Button>
                       <Button onClick={() => handleView(account)} className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 text-sm">
@@ -314,6 +372,75 @@ const Accounts: React.FC = () => {
           </div>
         </Modal>
       )}
+
+
+       {/* Edit Modal */}
+       {showEditModal && editedAccount && (
+        <Modal onClose={() => setShowEditModal(false)}>
+          <div className="p-4">
+            <h3 className="text-xl font-semibold mb-4">Edit Account</h3>
+            <form>
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="accountNumber" className="block text-sm font-semibold">Account Number</label>
+                  <input
+                    type="text"
+                    id="accountNumber"
+                    value={editedAccount.accountNumber}
+                    onChange={(e) => setEditedAccount({ ...editedAccount, accountNumber: e.target.value })}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="accountType" className="block text-sm font-semibold">Account Type</label>
+                  <select
+                    id="accountType"
+                    value={editedAccount.accountType}
+                    onChange={(e) => setEditedAccount({ ...editedAccount, accountType: e.target.value as 'CHECKING' | 'SAVINGS' | 'CREDIT' })}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  >
+                    <option value="CHECKING">Checking</option>
+                    <option value="SAVINGS">Savings</option>
+                    <option value="CREDIT">Credit</option>
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="balance" className="block text-sm font-semibold">Balance</label>
+                  <input
+                    type="number"
+                    id="balance"
+                    value={editedAccount.balance}
+                    onChange={(e) => setEditedAccount({ ...editedAccount, balance: parseFloat(e.target.value) })}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="status" className="block text-sm font-semibold">Status</label>
+                  <select
+                    id="status"
+                    value={editedAccount.status}
+                    onChange={(e) => setEditedAccount({ ...editedAccount, status: e.target.value as 'ACTIVE' | 'INACTIVE' | 'CLOSED' })}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  >
+                    <option value="ACTIVE">Active</option>
+                    <option value="INACTIVE">Inactive</option>
+                    <option value="CLOSED">Closed</option>
+                  </select>
+                </div>
+                <div>
+                 
+                </div>
+              </div>
+              <div className="mt-6 text-right">
+                <Button onClick={handleEditAccount} className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
+                  Save Changes
+                </Button>
+              </div>
+            </form>
+          </div>
+        </Modal>
+       )}
+
     </NavbarAside>
   );
 };
