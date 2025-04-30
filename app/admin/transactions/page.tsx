@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import NavbarAside from '@/components/admin/NavbarAside';
 import {  FaTrash, FaEye,FaFileExport } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
+import { generateAndDownloadPDF } from '@/lib/utils/downloadPdf';
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
@@ -109,9 +110,16 @@ const Transactions = () => {
                     <td className="p-4">{tx.recipientUser?.fname || '-'}</td>
                     <td className="p-4">{new Date(tx.createdAt).toLocaleDateString()}</td>
                     <td className="p-4 space-x-2">
-                      <Button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm">
-                      <FaFileExport />
-                      </Button>
+                    <Button
+  onClick={async () => {
+    const res = await fetch(`/api/admin/transactions/${tx.id}`);
+    const data = await res.json();
+    await generateAndDownloadPDF(data);
+  }}
+  className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm"
+>
+  <FaFileExport />
+</Button>
                       <Button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm">
                         <FaTrash />
                       </Button>

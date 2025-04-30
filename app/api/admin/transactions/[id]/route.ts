@@ -10,7 +10,7 @@ export async function GET(request, { params }) {
     console.log("Fetching transaction with ID:", id);  // Debug log
 
     const transaction = await prisma.transaction.findUnique({
-      where: { id: parseInt(id) },
+      where: { id },
       include: {
         senderUser: true,
         recipientUser: true,
