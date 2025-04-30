@@ -3,12 +3,11 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function GET(request, { params }) {
+// GET /api/admin/transactions/[id]
+export async function GET(request: Request, { params }: { params: { id: string } }) {
   const { id } = params;
 
   try {
-    console.log("Fetching transaction with ID:", id);  // Debug log
-
     const transaction = await prisma.transaction.findUnique({
       where: { id },
       include: {
@@ -18,12 +17,46 @@ export async function GET(request, { params }) {
     });
 
     if (!transaction) {
-      return NextResponse.json({ error: 'Transaction not found' }, { status: 404 });
+      return NextResponse.json({ error: "Transaction not found" }, { status: 404 });
     }
 
     return NextResponse.json(transaction);
   } catch (error) {
-    console.error('Error fetching transaction:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error fetching transaction:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
+// DELETE /api/admin/transactions/[id]
+export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+  const { id } = params;
+
+  try {
+    await prisma.transaction.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ message: "Transaction deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting transaction:", error);
+    return NextResponse.json({ error: "Failed to delete transaction" }, { status: 500 });
+  }
+}
+
+
+export async function PATCH(request, { params }) {
+  const { id } = params;
+  const { status } = await request.json();
+
+  try {
+    const transaction = await prisma.transaction.update({
+      where: { id },
+      data: { status },
+    });
+
+    return NextResponse.json(transaction);
+  } catch (error) {
+    console.error('Error updating transaction:', error);
+    return NextResponse.json({ error: 'Failed to update transaction' }, { status: 500 });
   }
 }

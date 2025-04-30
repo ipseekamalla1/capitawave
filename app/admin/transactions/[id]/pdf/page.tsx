@@ -70,7 +70,7 @@ const TransactionPDF = ({ transaction }) => (
         <Text style={{ fontSize: 14, marginBottom: 5 }}>Details</Text>
         <View style={styles.row}>
           <Text style={styles.label}>Amount:</Text>
-          <Text>${transaction.amount.toFixed(2)}</Text>
+          <Text>${transaction.amount}</Text>
         </View>
         <View style={styles.row}>
           <Text style={styles.label}>Type:</Text>

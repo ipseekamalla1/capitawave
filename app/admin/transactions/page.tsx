@@ -29,6 +29,55 @@ const Transactions = () => {
     fetchTransactions();
   }, []);
 
+
+
+
+  const handleDelete = async (id) => {
+    if (!confirm('Are you sure you want to delete this transaction?')) return;
+  
+    try {
+      const res = await fetch(`/api/admin/transactions/${id}`, {
+        method: 'DELETE',
+      });
+  
+      if (res.ok) {
+        setTransactions(transactions.filter((tx) => tx.id !== id));
+      } else {
+        const err = await res.json();
+        alert(err.error || 'Failed to delete transaction');
+      }
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
+      alert('Something went wrong.');
+    }
+  };
+  
+
+  const handleStatusChange = async (txId, newStatus, setTransactions) => {
+    try {
+      const res = await fetch(`/api/admin/transactions/${txId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+  
+      if (res.ok) {
+        const updated = await res.json();
+        setTransactions((prev) =>
+          prev.map((t) => (t.id === updated.id ? updated : t))
+        );
+      } else {
+        const err = await res.json();
+        alert(err.error || "Failed to update transaction status");
+      }
+    } catch (err) {
+      console.error("Error updating transaction status:", err);
+      alert("Something went wrong.");
+    }
+  };
+  
+  
+
   const handleSearch = (e) => {
     setSearchQuery(e.target.value.toLowerCase());
     setCurrentPage(1);
@@ -105,8 +154,18 @@ const Transactions = () => {
                   <tr key={tx.id} className="border-b hover:bg-gray-100">
                     <td className="p-4">${tx.amount.toFixed(2)}</td>
                     <td className="p-4">{tx.type}</td>
-                    <td className="p-4">{tx.status}</td>
-                    <td className="p-4">{tx.senderUser?.fname} {tx.senderUser?.lname}</td>
+                    <td className="p-4">
+                    <select
+                      value={tx.status}
+                      onChange={(e) => handleStatusChange(tx.id, e.target.value, setTransactions)}
+                      className="border px-2 py-1 rounded"
+                    >
+                      <option value="PENDING">Pending</option>
+                      <option value="COMPLETED">Completed</option>
+                      <option value="FAILED">Failed</option>
+                      <option value="REVERSED">Reversed</option>
+                    </select>
+                  </td>                    <td className="p-4">{tx.senderUser?.fname} {tx.senderUser?.lname}</td>
                     <td className="p-4">{tx.recipientUser?.fname || '-'}</td>
                     <td className="p-4">{new Date(tx.createdAt).toLocaleDateString()}</td>
                     <td className="p-4 space-x-2">
@@ -120,9 +179,13 @@ const Transactions = () => {
 >
   <FaFileExport />
 </Button>
-                      <Button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm">
+                      <Button 
+                        onClick={() => handleDelete(tx.id)}
+                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm">
                         <FaTrash />
                       </Button>
+
+
                       <Button
   onClick={() => window.open(`transactions/${tx.id}/pdf`, '_blank')}
   className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 text-sm"
