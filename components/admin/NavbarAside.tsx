@@ -1,6 +1,6 @@
 'use client'
 
-import { FaTachometerAlt, FaUsers, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import { FaTachometerAlt, FaUsers, FaCog, FaSignOutAlt,FaUserCircle, FaExchangeAlt} from 'react-icons/fa';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React from 'react';
@@ -32,10 +32,18 @@ export default function NavbarAside({ children }: { children: React.ReactNode })
             <FaUsers className="text-blue-600" />
             <span>Users</span>
           </Link>
-          <Link href="/admin/accounts" className="flex items-center space-x-3 py-2 px-4 rounded-md hover:bg-gray-100 transition">
-            <FaCog className="text-blue-600" />
-            <span>Accounts</span>
-          </Link>
+         
+<Link href="/admin/accounts" className="flex items-center space-x-3 py-2 px-4 rounded-md hover:bg-gray-100 transition">
+  <FaUserCircle className="text-blue-600" />
+  <span>Accounts</span>
+</Link>
+
+<Link href="/admin/transactions" className="flex items-center space-x-3 py-2 px-4 rounded-md hover:bg-gray-100 transition">
+  <FaExchangeAlt className="text-blue-600" />
+  <span>Transactions</span>
+</Link>
+
+
           <Link href="/admin/settings" className="flex items-center space-x-3 py-2 px-4 rounded-md hover:bg-gray-100 transition">
             <FaCog className="text-blue-600" />
             <span>Settings</span>
