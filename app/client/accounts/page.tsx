@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import UserSidebar from '@/components/user-dashboard/UserSidebar';
+import UserSidebar from '@/components/clients/user-dashboard/UserSidebar';
 
 interface Account {
   id: number;
@@ -42,7 +42,7 @@ const AccountsPage = () => {
           return;
         }
 
-        const response = await fetch(`/api/client/display-acc?userId=${user.id}`);
+        const response = await fetch(`/api/client/accounts/display-acc/${user.id}`);
         if (!response.ok) {
           throw new Error('Failed to fetch accounts');
         }

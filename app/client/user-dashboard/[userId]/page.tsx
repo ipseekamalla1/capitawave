@@ -15,7 +15,7 @@ import {
 import { Bar } from "react-chartjs-2";
 
 import { Button } from "@/components/ui/button";
-import UserSidebar from "@/components/user-dashboard/UserSidebar";
+import UserSidebar from "@/components/clients/user-dashboard/UserSidebar";
 
 // Register chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);

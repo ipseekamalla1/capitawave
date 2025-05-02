@@ -5,8 +5,9 @@ import {
   HomeIcon,
   ArrowRightIcon,
   UserCircleIcon,
-  CreditCardIcon,
-  CogIcon
+  CogIcon,
+  DocumentTextIcon
+
 
 } from "@heroicons/react/solid";
 export default function Sidebar() {
@@ -36,24 +37,27 @@ export default function Sidebar() {
             <span>Dashboard</span>
           </a>
         </Link>
-        <Link href="/transfer" legacyBehavior>
-          <a className="flex items-center space-x-2 hover:text-blue-700">
-            <ArrowRightIcon className="h-6 w-6" />
-            <span>Transfer</span>
-          </a>
-        </Link>
         <Link href="/client/accounts" legacyBehavior>
           <a className="flex items-center space-x-2 hover:text-blue-700">
             <UserCircleIcon className="h-6 w-6" />
             <span>Account</span>
           </a>
         </Link>
-        <Link href="/cards" legacyBehavior>
+
+        <Link href="/transfer" legacyBehavior>
           <a className="flex items-center space-x-2 hover:text-blue-700">
-            <CreditCardIcon className="h-6 w-6" />
-            <span>Cards</span>
+            <ArrowRightIcon className="h-6 w-6" />
+            <span>Transfer</span>
           </a>
         </Link>
+        <Link href="/transfer" legacyBehavior>
+          <a className="flex items-center space-x-2 hover:text-blue-700">
+            <DocumentTextIcon className="h-6 w-6" />
+            <span>Transactions</span>
+          </a>
+        </Link>
+       
+  
       </nav>
 
       {/* Settings & Logout */}
