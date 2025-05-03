@@ -62,7 +62,7 @@ export default function Sidebar() {
 
       {/* Settings & Logout */}
       <div className="space-y-4 p-8 mt-9">
-        <Link href="/settings" legacyBehavior>
+        <Link href="/client/settings" legacyBehavior>
           <a className="flex items-center space-x-2 hover:text-blue-700">
             <CogIcon className="h-6 w-6" />
             <span>Settings</span>
