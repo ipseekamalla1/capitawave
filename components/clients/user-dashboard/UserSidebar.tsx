@@ -44,13 +44,13 @@ export default function Sidebar() {
           </a>
         </Link>
 
-        <Link href="/transfer" legacyBehavior>
+        <Link href="/client/transfer" legacyBehavior>
           <a className="flex items-center space-x-2 hover:text-blue-700">
             <ArrowRightIcon className="h-6 w-6" />
             <span>Transfer</span>
           </a>
         </Link>
-        <Link href="/transfer" legacyBehavior>
+        <Link href="/client/transfer" legacyBehavior>
           <a className="flex items-center space-x-2 hover:text-blue-700">
             <DocumentTextIcon className="h-6 w-6" />
             <span>Transactions</span>

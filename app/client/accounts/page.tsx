@@ -24,6 +24,8 @@ const AccountsPage = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
+  const [showMonthSelector, setShowMonthSelector] = useState(false);
+  const [selectedMonths, setSelectedMonths] = useState<Record<number, string>>({});
 
   const dummyTransactions: Transaction[] = [
     { id: 1, date: '2025-02-20', description: 'Deposit', amount: 500, type: 'CREDIT' },
@@ -32,6 +34,26 @@ const AccountsPage = () => {
     { id: 4, date: '2025-02-23', description: 'Salary Credit', amount: 2000, type: 'CREDIT' },
     { id: 5, date: '2025-02-24', description: 'Electricity Bill', amount: -85, type: 'DEBIT' },
   ];
+
+  const handleMonthChange = (accountId: number, value: string) => {
+    setSelectedMonths((prev) => ({ ...prev, [accountId]: value }));
+  };
+
+  const handleDownloadStatement = (account: Account) => {
+    const month = selectedMonths[account.id];
+    if (!month) return alert("Please select a month");
+
+    const data = `Statement for ${account.accountNumber} - ${month}\nBalance: $${account.balance}\nStatus: ${account.status}`;
+    const blob = new Blob([data], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `statement-${account.accountNumber}-${month}.txt`;
+    link.click();
+
+    URL.revokeObjectURL(url);
+  };
 
   useEffect(() => {
     const fetchAccounts = async () => {
@@ -95,7 +117,8 @@ const AccountsPage = () => {
                       account.accountType === 'SAVINGS' ? 'bg-gradient-to-r from-slate-50 to-green-300' : 
                       account.accountType === 'CHECKING' ? 'bg-gradient-to-r from-slate-50 to-indigo-300' : 
                       'bg-gradient-to-r from-slate-50 to-yellow-300'
-                    }`}                  >
+                    }`}                  
+                  >
                     <div className="flex items-center justify-between mb-4">
                       <motion.span
                         whileHover={{ scale: 1.05 }}
@@ -137,6 +160,7 @@ const AccountsPage = () => {
                         View Details
                       </motion.button>
                     </div>
+                    
                   </motion.div>
                 ))
               )}
@@ -182,9 +206,52 @@ const AccountsPage = () => {
                       </tbody>
                     </table>
                   </div>
+
+                  {/* Download Statement */}
+                  <div className="mt-6 space-y-2">
+                    {!showMonthSelector ? (
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setShowMonthSelector(true)}
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+                      >
+                        Download Statement
+                      </motion.button>
+                    ) : (
+                      <div className="flex items-center gap-3">
+                        <select
+                          value={selectedMonths[selectedAccount.id] || ''}
+                          onChange={(e) => handleMonthChange(selectedAccount.id, e.target.value)}
+                          className="border rounded-md px-4 py-2"
+                        >
+                          <option value="">Select Month</option>
+                          <option value="January">January</option>
+                          <option value="February">February</option>
+                          <option value="March">March</option>
+                          <option value="April">April</option>
+                          <option value="May">May</option>
+                        </select>
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => handleDownloadStatement(selectedAccount)}
+                          className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md"
+                        >
+                          Download
+                        </motion.button>
+                      </div>
+                    )}
+                  </div>
                 </motion.div>
               ) : (
-                <p className="text-center text-gray-500">Select an account to view details</p>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center text-gray-500"
+                >
+                  <p>Select an account to view details.</p>
+                </motion.div>
               )}
             </div>
           </div>
