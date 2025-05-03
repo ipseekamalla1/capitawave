@@ -2,16 +2,13 @@
 import React, { useEffect, useState } from 'react';
 
 interface Account {
-    id: string;
-    accountType: string; // e.g., 'checking', 'savings'
-    accountNumber: string;
-  }
-  
-
+  id: string;
+  accountType: string; // e.g., 'checking', 'savings'
+  accountNumber: string;
+}
 
 const ThisBank = () => {
   const [fromAccount, setFromAccount] = useState('');
-  const [toAccount, setToAccount] = useState('');
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -21,7 +18,6 @@ const ThisBank = () => {
   const [errors, setErrors] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-
 
   useEffect(() => {
     const fetchAccounts = async () => {
@@ -49,20 +45,17 @@ const ThisBank = () => {
     fetchAccounts();
   }, []);
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     const newErrors: string[] = [];
-  
+
     // Validation checks
     if (!fromAccount) newErrors.push('Please select a "From Account".');
-    if (!toAccount) newErrors.push('Please select a "To Account".');
-    if (fromAccount === toAccount) newErrors.push('"From" and "To" accounts must be different.');
     if (!recipientUsername) newErrors.push('Please enter a "Recipient Username".');
     if (!recipientAccountNumber) newErrors.push('Please enter a "Recipient Account Number".');
     if (!amount || parseFloat(amount) <= 0) newErrors.push('Amount must be greater than 0.');
-  
+
     setErrors(newErrors);
 
     if (newErrors.length > 0) return; // Prevent form submission if errors exist
@@ -78,12 +71,11 @@ const ThisBank = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/client/accounts/transfer', {
+      const response = await fetch('/api/client/transfer/this-bank', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           fromAccountId: fromAccount,
-          toAccountId: toAccount,
           amount,
           note,
           recipientUsername,
@@ -110,33 +102,31 @@ const ThisBank = () => {
       <form className="space-y-6" onSubmit={handleSubmit}>
         {/* Errors Display */}
         {errors.length > 0 && (
-        <ul className="p-4 bg-red-100 text-red-700 rounded-lg space-y-1">
-          {errors.map((error, idx) => (
-            <li key={idx}>• {error}</li>
-          ))}
-        </ul>
-      )}
+          <ul className="p-4 bg-red-100 text-red-700 rounded-lg space-y-1">
+            {errors.map((error, idx) => (
+              <li key={idx}>• {error}</li>
+            ))}
+          </ul>
+        )}
 
         {/* From Account */}
         <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">From Account</label>
-        <select
-          value={fromAccount}
-          onChange={(e) => setFromAccount(e.target.value)}
-          disabled={loading}
-          className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        >
-          <option value="">-- Select an account --</option>
-          {accounts.map((acc) => (
-            <option key={acc.id} value={acc.id}>
-              {acc.accountType.charAt(0).toUpperCase() + acc.accountType.slice(1)} - ****
-              {acc.accountNumber.slice(-4)}
-            </option>
-          ))}
-        </select>
-      </div>
-
-       
+          <label className="block text-sm font-medium text-gray-700 mb-1">From Account</label>
+          <select
+            value={fromAccount}
+            onChange={(e) => setFromAccount(e.target.value)}
+            disabled={loading}
+            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="">-- Select an account --</option>
+            {accounts.map((acc) => (
+              <option key={acc.id} value={acc.id}>
+                {acc.accountType.charAt(0).toUpperCase() + acc.accountType.slice(1)} - ****
+                {acc.accountNumber.slice(-4)}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {/* Amount */}
         <div>
@@ -152,7 +142,16 @@ const ThisBank = () => {
         </div>
 
         {/* Note */}
-        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Note (optional)</label>
+          <textarea
+            placeholder="E.g., Rent, tuition, etc."
+            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+          />
+        </div>
+
         {/* Recipient Username */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Recipient Username</label>
@@ -178,16 +177,6 @@ const ThisBank = () => {
             required
           />
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Note (optional)</label>
-          <textarea
-            placeholder="E.g., Rent, tuition, etc."
-            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-          />
-        </div>
-
 
         {/* Success Message */}
         {successMessage && (
