@@ -13,22 +13,24 @@ const ThisBank = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrors([]);
+  
+    const newErrors: string[] = [];
+  
+    // Validation checks
+    if (!fromAccount) newErrors.push('Please select a "From Account".');
+    if (!toAccount) newErrors.push('Please select a "To Account".');
+    if (fromAccount === toAccount) newErrors.push('"From" and "To" accounts must be different.');
+    if (!recipientUsername) newErrors.push('Please enter a "Recipient Username".');
+    if (!recipientAccountNumber) newErrors.push('Please enter a "Recipient Account Number".');
+    if (!amount || parseFloat(amount) <= 0) newErrors.push('Amount must be greater than 0.');
+  
+    setErrors(newErrors);
 
-    // Input validation
-    if (!fromAccount || !toAccount || !recipientUsername || !recipientAccountNumber) {
-      setErrors(['Please fill out all required fields.']);
-      return;
-    }
+    if (newErrors.length > 0) return; // Prevent form submission if errors exist
 
+    // Assume you're fetching balance from backend (mock value here)
+    const availableBalance = 1000; // This should be fetched from your backend based on the `fromAccount` ID.
     const parsedAmount = parseFloat(amount);
-    if (parsedAmount <= 0) {
-      setErrors(['Amount must be greater than 0']);
-      return;
-    }
-
-    // Assuming you have a function to get available balance from your server:
-    const availableBalance = 1000; // This should be fetched from the backend based on the `fromAccount` ID.
     if (parsedAmount > availableBalance) {
       setErrors(['Insufficient funds in the selected account']);
       return;
@@ -67,6 +69,17 @@ const ThisBank = () => {
   return (
     <div>
       <form className="space-y-6" onSubmit={handleSubmit}>
+        {/* Errors Display */}
+        {errors.length > 0 && (
+          <div className="text-red-600 text-sm mt-2">
+            <ul>
+              {errors.map((error, idx) => (
+                <li key={idx}>{error}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {/* From Account */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">From Account</label>
@@ -81,6 +94,8 @@ const ThisBank = () => {
             <option value="savings">Savings Account - ****5678</option>
           </select>
         </div>
+
+       
 
         {/* Amount */}
         <div>
@@ -131,17 +146,6 @@ const ThisBank = () => {
             required
           />
         </div>
-
-        {/* Errors */}
-        {errors.length > 0 && (
-          <div className="text-red-600 text-sm mt-2">
-            <ul>
-              {errors.map((error, idx) => (
-                <li key={idx}>{error}</li>
-              ))}
-            </ul>
-          </div>
-        )}
 
         {/* Success Message */}
         {successMessage && (
