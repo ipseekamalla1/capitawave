@@ -1,15 +1,54 @@
-import React, { useState } from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
+
+interface Account {
+    id: string;
+    accountType: string; // e.g., 'checking', 'savings'
+    accountNumber: string;
+  }
+  
+
 
 const ThisBank = () => {
   const [fromAccount, setFromAccount] = useState('');
   const [toAccount, setToAccount] = useState('');
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
+  const [accounts, setAccounts] = useState<Account[]>([]);
+
   const [recipientUsername, setRecipientUsername] = useState('');
   const [recipientAccountNumber, setRecipientAccountNumber] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+
+
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!user.id) {
+          alert('User not logged in');
+          return;
+        }
+
+        const response = await fetch(`/api/client/accounts/display-acc/${user.id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch accounts');
+        }
+
+        const data = await response.json();
+        setAccounts(data);
+      } catch (error) {
+        console.error('Error fetching accounts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAccounts();
+  }, []);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,29 +110,31 @@ const ThisBank = () => {
       <form className="space-y-6" onSubmit={handleSubmit}>
         {/* Errors Display */}
         {errors.length > 0 && (
-          <div className="text-red-600 text-sm mt-2">
-            <ul>
-              {errors.map((error, idx) => (
-                <li key={idx}>{error}</li>
-              ))}
-            </ul>
-          </div>
-        )}
+        <ul className="p-4 bg-red-100 text-red-700 rounded-lg space-y-1">
+          {errors.map((error, idx) => (
+            <li key={idx}>• {error}</li>
+          ))}
+        </ul>
+      )}
 
         {/* From Account */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">From Account</label>
-          <select
-            value={fromAccount}
-            onChange={(e) => setFromAccount(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required
-          >
-            <option value="">Select an Account</option>
-            <option value="checking">Checking Account - ****1234</option>
-            <option value="savings">Savings Account - ****5678</option>
-          </select>
-        </div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">From Account</label>
+        <select
+          value={fromAccount}
+          onChange={(e) => setFromAccount(e.target.value)}
+          disabled={loading}
+          className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+          <option value="">-- Select an account --</option>
+          {accounts.map((acc) => (
+            <option key={acc.id} value={acc.id}>
+              {acc.accountType.charAt(0).toUpperCase() + acc.accountType.slice(1)} - ****
+              {acc.accountNumber.slice(-4)}
+            </option>
+          ))}
+        </select>
+      </div>
 
        
 
@@ -111,16 +152,7 @@ const ThisBank = () => {
         </div>
 
         {/* Note */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Note (optional)</label>
-          <textarea
-            placeholder="E.g., Rent, tuition, etc."
-            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-          />
-        </div>
-
+        
         {/* Recipient Username */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Recipient Username</label>
@@ -146,6 +178,16 @@ const ThisBank = () => {
             required
           />
         </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Note (optional)</label>
+          <textarea
+            placeholder="E.g., Rent, tuition, etc."
+            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+          />
+        </div>
+
 
         {/* Success Message */}
         {successMessage && (

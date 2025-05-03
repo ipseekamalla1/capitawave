@@ -58,7 +58,7 @@ const MoveMoney = () => {
     if (newErrors.length === 0) {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       try {
-        const res = await fetch('/api/client/accounts/transfer', {
+        const res = await fetch('/api/client/transfer/move-money', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
