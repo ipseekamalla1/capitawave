@@ -6,7 +6,7 @@ import OtherBank from '@/components/clients/OtherBank';
 import MoveMoney from '@/components/clients//MoveMoney';
 
 const Transfer = () => {
-  const [activeTab, setActiveTab] = useState<'this' | 'other' | 'move'>('this');
+  const [activeTab, setActiveTab] = useState<'this' | 'other' | 'move'>('move');
 
   return (
     <div className="flex min-h-screen bg-gray-100">

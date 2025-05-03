@@ -92,10 +92,10 @@ const SignupForm = () => {
   }
 
   return (
-    <section className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-xl my-5">
+    <section className="w-full items-center justify-center min-h-screen bg-gray-50">
+      <div className=" bg-white p-8 rounded-lg shadow-xl my-3">
          
-    <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
+    <h2 className="text-3xl font-bold text-center text-gray-800 mb-5">
       Be a member of Capita Wave
     </h2>
 

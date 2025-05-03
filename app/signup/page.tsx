@@ -5,20 +5,20 @@ import Image from "next/image";
 
 const SignUp = () => {
   return (
-    <div className="flex min-h-screen">
-      {/* Left Side - Image */}
-      <div className="w-1/2">
+    <div className="flex bg-gray-100 min-h-screen">
+      {/* Left Side - Image (40% width) */}
+      <div className="w-2/5 flex">
         <Image
           src="/assets/register-img.jpg"
-          height={1000}
+          height={0} // Setting height to 0 to use aspect ratio
           width={1000}
           alt="patient"
-          className="object-cover w-full h-full"
+          className="w-full h-128 object-cover" // Ensures the image fills the space
         />
       </div>
 
-      {/* Right Side - Form */}
-      <section className="w-1/2 flex flex-col justify-center p-8 bg-white">
+      {/* Right Side - Form (60% width) */}
+      <section className="w-3/5 flex flex-col justify-center p-5 bg-white">
         {/* Logo */}
         <div className="flex justify-center mb-5">
           <Link href="/">
@@ -26,15 +26,16 @@ const SignUp = () => {
               src="/assets/icons/logo-full.png"
               alt="Logo"
               width={150}
-              height={40} 
+              height={40}
               className="object-contain"
             />
           </Link>
         </div>
 
-        <SignupForm />
-
-        
+        {/* Sign Up Form */}
+        <div>
+          <SignupForm />
+        </div>
       </section>
     </div>
   );
