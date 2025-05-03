@@ -102,7 +102,22 @@ model Transaction {
   recipientUserId  String?
   recipientUser    User?             @relation("Recipient", fields: [recipientUserId], references: [id])
 
-  // Optional external reference (no relation for now)
-  externalBankName     String?
+ // Optional external reference (no relation for now)
+  externalBankName      String?
   externalAccountNumber String?
+
+  // Relation to external bank account
+  externalBankAccountId String?
+  externalBankAccount   ExternalBankAccount? @relation(fields: [externalBankAccountId], references: [id])
+
+}
+
+model ExternalBankAccount {
+  id                     String    @id @default(uuid())
+  externalBankName        String    // Name of the external bank
+  externalAccountNumber   String    @unique // External account number
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+
+  transactions            Transaction[] // Linking to transactions involving this external account
 }
