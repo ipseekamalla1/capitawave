@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import UserSidebar from '@/components/clients/user-dashboard/UserSidebar';
 import ThisBank from '@/components/clients/ThisBank';
 import OtherBank from '@/components/clients/OtherBank';
-import MoveMoney from '@/components/clients/MoveMoney';
+import MoveMoney from '@/components/clients//MoveMoney';
 
 const Transfer = () => {
   const [activeTab, setActiveTab] = useState<'this' | 'other' | 'move'>('this');
@@ -50,24 +50,14 @@ const Transfer = () => {
             </button>
           </div>
 
-          {/* Form */}
-          <form className="space-y-6">
-           
-
+        
             {/* Conditional Fields for Different Tabs */}
             {activeTab === 'this' && <ThisBank />}
             {activeTab === 'other' && <OtherBank />}
             {activeTab === 'move' && <MoveMoney />}
 
-            <div>
-              <button
-                type="submit"
-                className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition"
-              >
-                Transfer Now
-              </button>
-            </div>
-          </form>
+            
+    
         </div>
       </main>
     </div>
