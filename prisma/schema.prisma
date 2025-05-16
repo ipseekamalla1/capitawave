@@ -63,6 +63,10 @@ model User {
   emailVerified    Boolean  @default(false)
   verificationToken String? @unique
 
+
+  otpCode       String?  // Store OTP temporarily
+  otpExpiresAt  DateTime? // Store OTP expiry time
+
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
