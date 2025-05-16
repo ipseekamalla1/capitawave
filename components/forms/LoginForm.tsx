@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,9 +29,11 @@ export enum FormFieldType {
 const LoginForm = () => {
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [showOtpInput, setShowOtpInput] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
   const [emailForOtp, setEmailForOtp] = useState("");
-  const [otp, setOtp] = useState("");
+  const [otpDigits, setOtpDigits] = useState<string[]>(Array(6).fill(""));
+
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -41,7 +43,6 @@ const LoginForm = () => {
     },
   });
 
-  // Main login submit handler
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     setErrorMessage(null);
 
@@ -61,12 +62,12 @@ const LoginForm = () => {
       }
 
       if (data.otpSent) {
-        // Step 1 complete: OTP sent to user
         toast.success("OTP sent to your email.");
-        setShowOtpInput(true);
         setEmailForOtp(values.email);
+        setShowOtpModal(true); // Show modal instead of inline OTP input
+        setOtpDigits(Array(6).fill("")); // Reset OTP inputs
+        setTimeout(() => inputRefs.current[0]?.focus(), 100); // Focus first input
       } else {
-        // Fallback for direct login without OTP
         handleLoginSuccess(data);
       }
     } catch (error) {
@@ -75,10 +76,40 @@ const LoginForm = () => {
     }
   }
 
-  // OTP submission handler
+  // Handle change in each OTP input box
+  const handleOtpChange = (index: number, value: string) => {
+    if (/^\d?$/.test(value)) {
+      const newOtp = [...otpDigits];
+      newOtp[index] = value;
+      setOtpDigits(newOtp);
+
+      if (value && index < 5) {
+        inputRefs.current[index + 1]?.focus();
+      }
+    }
+  };
+
+  // Handle keydown for backspace and arrow navigation
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Backspace" && !otpDigits[index] && index > 0) {
+      const newOtp = [...otpDigits];
+      newOtp[index - 1] = "";
+      setOtpDigits(newOtp);
+      inputRefs.current[index - 1]?.focus();
+      e.preventDefault();
+    } else if (e.key === "ArrowLeft" && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+      e.preventDefault();
+    } else if (e.key === "ArrowRight" && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+      e.preventDefault();
+    }
+  };
+
   const handleOtpSubmit = async () => {
-    if (!otp || !emailForOtp) {
-      toast.error("Please enter the OTP.");
+    const otp = otpDigits.join("");
+    if (otp.length !== 6 || otpDigits.some((digit) => digit === "")) {
+      toast.error("Please enter the 6-digit OTP.");
       return;
     }
 
@@ -97,6 +128,8 @@ const LoginForm = () => {
         return;
       }
 
+      toast.success(data.message || "Login successful!");
+      setShowOtpModal(false); // Close modal on success
       handleLoginSuccess(data);
     } catch (error) {
       console.error("OTP error:", error);
@@ -104,9 +137,7 @@ const LoginForm = () => {
     }
   };
 
-  // Final step: store token & redirect
   const handleLoginSuccess = (data: any) => {
-    toast.success(data.message || "Login successful!");
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
     localStorage.setItem("userId", data.user.id);
@@ -132,7 +163,6 @@ const LoginForm = () => {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Email Field */}
             <CustomFormField
               fieldType={FormFieldType.INPUT}
               control={form.control}
@@ -142,7 +172,6 @@ const LoginForm = () => {
               className="border border-gray-300 p-3 rounded-md w-full"
             />
 
-            {/* Password Field */}
             <CustomFormField
               fieldType={FormFieldType.INPUT}
               control={form.control}
@@ -153,43 +182,15 @@ const LoginForm = () => {
               className="border border-gray-300 p-3 rounded-md w-full"
             />
 
-            {/* Show OTP Input If Needed */}
-            {showOtpInput && (
-              <div>
-                <label htmlFor="otp" className="block text-sm font-medium text-gray-700">
-                  Enter OTP
-                </label>
-                <input
-                  type="text"
-                  id="otp"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                  className="border border-gray-300 p-3 rounded-md w-full mt-1"
-                  placeholder="Enter the OTP"
-                />
-                <Button
-                  type="button"
-                  onClick={handleOtpSubmit}
-                  className="mt-4 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                >
-                  Verify OTP
-                </Button>
-              </div>
-            )}
+            <div className="flex justify-center">
+              <Button
+                type="submit"
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Login
+              </Button>
+            </div>
 
-            {/* Submit Button */}
-            {!showOtpInput && (
-              <div className="flex justify-center">
-                <Button
-                  type="submit"
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
-                  Login
-                </Button>
-              </div>
-            )}
-
-            {/* Sign Up Link */}
             <div className="text-center mt-4">
               <p className="text-gray-600">
                 Don’t have an account?{" "}
@@ -200,6 +201,49 @@ const LoginForm = () => {
             </div>
           </form>
         </Form>
+
+        {/* OTP Modal */}
+        {showOtpModal && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="bg-white rounded-lg p-6 w-80 max-w-full shadow-lg text-center">
+              <h3 className="text-xl font-semibold mb-4">Enter OTP</h3>
+              <div className="flex justify-center space-x-2 mb-4">
+                {otpDigits.map((digit, idx) => (
+                  <input
+                    key={idx}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    className="w-10 h-12 text-center border-2 border-gray-300 rounded-md text-xl focus:border-blue-600 focus:outline-none"
+                    value={digit}
+                    onChange={(e) => handleOtpChange(idx, e.target.value)}
+                    onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                    ref={(el) => (inputRefs.current[idx] = el)}
+                    autoComplete="one-time-code"
+                  />
+                ))}
+              </div>
+              <div className="flex justify-between">
+                <Button
+                  onClick={() => setShowOtpModal(false)}
+                  className="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleOtpSubmit}
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded"
+                >
+                  Verify OTP
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
