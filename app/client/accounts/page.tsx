@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import UserSidebar from '@/components/clients/user-dashboard/UserSidebar';
+import { FaCcVisa, FaCcMastercard, FaCcAmex } from 'react-icons/fa'; // You can add icons for Visa, Mastercard, etc.
 
 interface Account {
   id: number;
@@ -10,6 +11,7 @@ interface Account {
   balance: number;
   accountType: 'CHECKING' | 'SAVINGS';
   status: 'ACTIVE' | 'INACTIVE' | 'CLOSED';
+  accountHolder: string; // Added account holder name
 }
 
 interface Transaction {
@@ -119,20 +121,22 @@ const AccountsPage = () => {
                       'bg-gradient-to-r from-slate-50 to-yellow-300'
                     }`}                  
                   >
-                    <div className="flex items-center justify-between mb-4">
-                      <motion.span
-                        whileHover={{ scale: 1.05 }}
-                        className={`px-3 py-1 rounded-full text-sm font-medium
-                          ${account.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 
-                            account.status === 'INACTIVE' ? 'bg-yellow-100 text-yellow-800' : 
-                            'bg-red-100 text-red-800'}`}
-                      >
-                        {account.status}
-                      </motion.span>
-                      <span className="text-sm font-medium text-gray-500">{account.accountType}</span>
-                    </div>
+                    <div className="flex flex-col justify-between mb-4 space-y-4">
+                      <div className="flex justify-between items-center">
+                        {/* Card Icon */}
+                        {account.accountType === 'SAVINGS' ? (
+                          <FaCcVisa className="text-3xl text-blue-600" />
+                        ) : account.accountType === 'CHECKING' ? (
+                          <FaCcMastercard className="text-3xl text-red-600" />
+                        ) : (
+                          <FaCcAmex className="text-3xl text-green-600" />
+                        )}
+                      </div>
 
-                    <div className="space-y-3">
+                      <div>
+                        <p className="text-sm text-gray-500">Card Holder</p>
+                        <p className="text-lg font-semibold text-gray-800">{account.accountHolder}</p>
+                      </div>
                       <div>
                         <p className="text-sm text-gray-500">Account Number</p>
                         <p className="text-lg font-semibold text-gray-800">{account.accountNumber}</p>
@@ -250,7 +254,7 @@ const AccountsPage = () => {
                   animate={{ opacity: 1 }}
                   className="text-center text-gray-500"
                 >
-                  <p>Select an account to view details.</p>
+                  Select an account to view details
                 </motion.div>
               )}
             </div>

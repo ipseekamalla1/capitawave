@@ -11,6 +11,8 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import CustomFormField from "../CustomFormField";
+import Link from "next/link";
+
 
 
 
@@ -39,6 +41,7 @@ const formSchema = z.object({
   city: z.string().min(1, { message: "City is required." }),
   country: z.string().min(1, { message: "Country is required." }),
   phone: z.string().min(1, { message: "Phone number is required." }),
+  
 })
 .refine((data) => data.password === data.repassword, {
   message: "Passwords must match.",
@@ -236,14 +239,21 @@ const SignupForm = () => {
           label="Phone Number"
           placeholder="(416) 123-4567"
         />
-
+<div className="text-center mt-4">
+  <p>
+    Already have an account?{" "}
+    <Link href="/login" className="text-blue-600 hover:underline">
+      Go to Login
+    </Link>
+  </p>
+</div>
         {/* Submit Button */}
         <div className="flex justify-center">
           <Button
             type="submit"
             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300"
           >
-            Submit
+            Register
           </Button>
         </div>
       </form>

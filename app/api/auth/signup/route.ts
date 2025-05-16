@@ -1,53 +1,28 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
-import { NextRequest, NextResponse } from "next/server";  // Import NextRequest and NextResponse
+import { NextRequest, NextResponse } from "next/server";
+import { sendVerificationEmail } from "@/lib/email";
+import { randomBytes } from "crypto";
 
 const prisma = new PrismaClient();
 
-type SignupRequestBody = {
-  fname: string;
-  lname: string;
-  username: string;
-  email: string;
-  password: string;
-  street: string;
-  state: string;
-  zip: string;
-  city: string;
-  country: string;
-  phone: string;
-};
-
-// Named export for POST method
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();  
+    const body = await req.json();
     const {
-      fname,
-      lname,
-      username,
-      email,
-      password,
-      street,
-      state,
-      zip,
-      city,
-      country,
-      phone,
-    }: SignupRequestBody = body;
+      fname, lname, username, email, password,
+      street, state, zip, city, country, phone,
+    } = body;
 
-    // Check if password is empty
     if (!password) {
-      return NextResponse.json(
-        { error: "Password is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Password is required" }, { status: 400 });
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Save the user to the database
+    // Generate verification token
+    const verificationToken = randomBytes(32).toString("hex");
+
     const newUser = await prisma.user.create({
       data: {
         fname,
@@ -61,16 +36,20 @@ export async function POST(req: NextRequest) {
         city,
         country,
         phone,
+        verificationToken,
+        emailVerified: false,
       },
     });
 
-    // Return success response
-    return NextResponse.json({ message: "User created successfully", user: newUser }, { status: 201 });
-  } catch (error) {
-    console.error(error);
+    // Send verification email
+    await sendVerificationEmail(email, verificationToken);
+
     return NextResponse.json(
-      { error: "An error occurred while creating the user" },
-      { status: 500 }
+      { message: "User created successfully. Please check your email to verify your account." },
+      { status: 201 }
     );
+  } catch (error) {
+    console.error("Signup error:", error);
+    return NextResponse.json({ error: "Something went wrong." }, { status: 500 });
   }
 }

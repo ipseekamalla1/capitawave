@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import CustomFormField from "../CustomFormField";
+
+import toast from "react-hot-toast";
 // Define the schema for form validation
 const loginSchema = z.object({
   email: z.string().email("Invalid email address."),
@@ -48,6 +50,7 @@ const LoginForm = () => {
   
       if (!response.ok) {
         const errorData = await response.json();
+        toast.error(errorData.message || "Login failed. Please try again.");
         setErrorMessage(errorData.message || "Login failed. Please try again.");
         return;
       }

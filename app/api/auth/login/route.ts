@@ -6,17 +6,15 @@ import { PrismaClient } from "@prisma/client";
 const SECRET_KEY = process.env.JWT_SECRET_KEY || "your-secret-key";
 const prisma = new PrismaClient();
 
-// Handle POST requests
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json(); // Parse JSON body
+    const body = await req.json();
     const { email, password } = body;
 
     if (!email || !password) {
       return NextResponse.json({ message: "Email and password are required." }, { status: 400 });
     }
 
-    // Find the user in the database
     const user = await prisma.user.findUnique({
       where: { email },
       select: {
@@ -25,6 +23,7 @@ export async function POST(req: NextRequest) {
         lname: true,
         username: true,
         email: true,
+        password: true,
         street: true,
         state: true,
         zip: true,
@@ -33,8 +32,8 @@ export async function POST(req: NextRequest) {
         phone: true,
         createdAt: true,
         updatedAt: true,
-        password:true,
-        role: true, 
+        role: true,
+        emailVerified: true, // 🧠 Make sure this is included
       },
     });
 
@@ -42,20 +41,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Invalid credentials." }, { status: 401 });
     }
 
-    // Verify the password
+    if (!user.emailVerified) {
+      return NextResponse.json({ message: "Please verify your email before logging in." }, { status: 403 });
+    }
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return NextResponse.json({ message: "Invalid credentials." }, { status: 401 });
     }
 
-    // Generate JWT token
     const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, { expiresIn: "1h" });
 
-    // Return token and user data
-    return NextResponse.json({ token, user });
+    return NextResponse.json({ token, user, message: "Email verified. Login successful!" });
   } catch (error) {
     console.error("Error during login:", error);
     return NextResponse.json({ message: "Something went wrong." }, { status: 500 });
   }
 }
-
