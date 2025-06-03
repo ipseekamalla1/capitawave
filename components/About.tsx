@@ -33,7 +33,7 @@ const About = () => {
                   Empowering You to Achieve Financial Success
                   </h2>
                   <p className="text-gray-500 text-base font-normal leading-relaxed lg:text-start text-center">
-                  We are committed to providing innovative banking solutions that help individuals and businesses manage their finances with confidence. Whether it's saving for the future, making secure transactions, or growing wealth, we are here to support you every step of the way.
+                  We are committed to providing innovative banking solutions that help individuals and businesses manage their finances with confidence. Whether its saving for the future, making secure transactions, or growing wealth, we are here to support you every step of the way.
 
 
                   </p>

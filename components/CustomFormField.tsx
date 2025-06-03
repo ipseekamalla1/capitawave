@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { Control, ControllerRenderProps } from "react-hook-form";
+import { Control, ControllerRenderProps, FieldPath, FieldValues } from "react-hook-form";
 import { FormFieldType } from "./forms/SignupForm";
 
 import "react-phone-number-input/style.css";
@@ -23,26 +23,26 @@ import { Select, SelectContent, SelectTrigger, SelectValue } from "./ui/select";
 import { Textarea } from "./ui/textarea";
 import { Checkbox } from "./ui/checkbox";
 
-interface CustomProps {
-  control: Control<any>;
-  name: string;
+interface CustomProps<TFieldValues extends FieldValues = FieldValues> {
+  control: Control<TFieldValues>;
+  name: FieldPath<TFieldValues>;
   label?: string;
   placeholder?: string;
   disabled?: boolean;
   dateFormat?: string;
   showTimeSelect?: boolean;
   children?: React.ReactNode;
-  renderSkeleton?: (field: ControllerRenderProps<any, any>) => React.ReactNode;
+  renderSkeleton?: (field: ControllerRenderProps<TFieldValues, FieldPath<TFieldValues>>) => React.ReactNode;
   fieldType: FormFieldType;
   type?: string;
 }
 
-const RenderField = ({
+const RenderField = <TFieldValues extends FieldValues>({
   field,
   props,
 }: {
-  field: ControllerRenderProps<any, any>;
-  props: CustomProps;
+  field: ControllerRenderProps<TFieldValues, FieldPath<TFieldValues>>;
+  props: CustomProps<TFieldValues>;
 }) => {
   switch (props.fieldType) {
     case FormFieldType.INPUT:
@@ -54,6 +54,7 @@ const RenderField = ({
               placeholder={props.placeholder}
               {...field}
               className="shad-input border-0"
+              disabled={props.disabled}
             />
           </FormControl>
         </div>
@@ -64,8 +65,8 @@ const RenderField = ({
         <div className="flex rounded-md border border-dark-500 bg-dark-400">
           <FormControl>
             <DatePicker
-              selected={field.value}
-              onChange={(date) => field.onChange(date)}
+              selected={field.value as Date}
+              onChange={(date: Date) => field.onChange(date)}
               timeInputLabel="Time:"
               showTimeSelect={props.showTimeSelect ?? false}
               dateFormat={props.dateFormat ?? "MM/dd/yyyy"}
@@ -100,7 +101,7 @@ const RenderField = ({
               <SelectValue placeholder={props.placeholder} />
             </SelectTrigger>
             <SelectContent className="shad-select-content">
-              {props.children /* Render passed options here */}
+              {props.children}
             </SelectContent>
           </Select>
         </FormControl>
@@ -123,11 +124,11 @@ const RenderField = ({
         <FormControl>
           <div className="flex items-center gap-4">
             <Checkbox
-              id={props.name}
-              checked={field.value}
+              id={props.name.toString()}
+              checked={field.value as boolean}
               onCheckedChange={field.onChange}
             />
-            <label htmlFor={props.name} className="checkbox-label">
+            <label htmlFor={props.name.toString()} className="checkbox-label">
               {props.label}
             </label>
           </div>
@@ -142,7 +143,9 @@ const RenderField = ({
   }
 };
 
-const CustomFormField = (props: CustomProps) => {
+const CustomFormField = <TFieldValues extends FieldValues>(
+  props: CustomProps<TFieldValues>
+) => {
   const { control, fieldType, name, label } = props;
 
   return (
