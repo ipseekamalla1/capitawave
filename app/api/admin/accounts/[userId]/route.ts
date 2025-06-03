@@ -3,12 +3,21 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+// Helper to extract userId from URL
+function getUserIdFromRequest(req: NextRequest): string | null {
+  const url = new URL(req.url);
+  const segments = url.pathname.split('/');
+  const userId = segments.pop() || segments.pop(); // last segment (accountId)
+  return userId ?? null;
+}
+
 // PUT: Update account by ID
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { userId: string } }
-) {
-  const { userId } = params;
+export async function PUT(req: NextRequest) {
+  const userId = getUserIdFromRequest(req);
+
+  if (!userId) {
+    return NextResponse.json({ message: 'Invalid or missing userId' }, { status: 400 });
+  }
 
   try {
     const { accountNumber, accountType, balance, status } = await req.json();
@@ -29,11 +38,12 @@ export async function PUT(
 }
 
 // DELETE: Delete account by ID
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { userId: string } }
-) {
-  const { userId } = params;
+export async function DELETE(req: NextRequest) {
+  const userId = getUserIdFromRequest(req);
+
+  if (!userId) {
+    return NextResponse.json({ message: 'Invalid or missing userId' }, { status: 400 });
+  }
 
   try {
     const account = await prisma.account.findUnique({
