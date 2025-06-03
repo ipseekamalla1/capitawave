@@ -24,7 +24,8 @@ export enum FormFieldType {
   CHECKBOX = "checkbox",
   DATE_PICKER = "datePicker",
   SELECT = "select",
-});
+};
+
 
 // Define types for API response
 interface User {
