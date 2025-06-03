@@ -3,15 +3,12 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-type Params = {
-  params: {
-    userId: string;
-  };
-};
-
-// PUT: Update account
-export async function PUT(req: NextRequest, context: Params) {
-  const { userId } = context.params;
+// PUT: Update account by ID
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { userId: string } }
+) {
+  const { userId } = params;
 
   try {
     const { accountNumber, accountType, balance, status } = await req.json();
@@ -24,16 +21,24 @@ export async function PUT(req: NextRequest, context: Params) {
     return NextResponse.json(updatedAccount, { status: 200 });
   } catch (error) {
     console.error('Failed to update account:', error);
-    return NextResponse.json({ message: 'Failed to update account' }, { status: 500 });
+    return NextResponse.json(
+      { message: 'Failed to update account', error: String(error) },
+      { status: 500 }
+    );
   }
 }
 
-// DELETE: Delete account
-export async function DELETE(req: NextRequest, context: Params) {
-  const { userId } = context.params;
+// DELETE: Delete account by ID
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { userId: string } }
+) {
+  const { userId } = params;
 
   try {
-    const account = await prisma.account.findUnique({ where: { id: userId } });
+    const account = await prisma.account.findUnique({
+      where: { id: userId },
+    });
 
     if (!account) {
       return NextResponse.json({ message: 'Account not found' }, { status: 404 });
