@@ -165,7 +165,7 @@ const Transactions = () => {
                       <option value="FAILED">Failed</option>
                       <option value="REVERSED">Reversed</option>
                     </select>
-                  </td>                    <td className="p-4">{tx.senderUser?.fname} {tx.senderUser?.lname}</td>
+                  </td><td className="p-4">{tx.senderUser?.fname} {tx.senderUser?.lname}</td>
                     <td className="p-4">{tx.recipientUser?.fname || '-'}</td>
                     <td className="p-4">{new Date(tx.createdAt).toLocaleDateString()}</td>
                     <td className="p-4 space-x-2">

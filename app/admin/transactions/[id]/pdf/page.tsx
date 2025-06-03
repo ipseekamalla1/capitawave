@@ -2,38 +2,61 @@
 
 import React from 'react';
 import { useParams } from 'next/navigation';
-import { PDFViewer, Page, Text, View, Document, StyleSheet, Image } from '@react-pdf/renderer';
+import {
+  PDFViewer,
+  Page,
+  Text,
+  View,
+  Document,
+  StyleSheet,
+  Image,
+} from '@react-pdf/renderer';
 
 const styles = StyleSheet.create({
   page: {
     padding: 40,
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: 'Helvetica',
     backgroundColor: '#fff',
   },
   header: {
-    borderBottom: '1 solid #ccc',
-    paddingBottom: 10,
-    marginBottom: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    marginBottom: 20,
+    borderBottom: '1 solid #ccc',
+    paddingBottom: 10,
   },
   logo: {
-    width: 100,
+    width: 80,
     height: 40,
+  },
+  verticalLine: {
+    width: 1,
+    height: '100%',
+    backgroundColor: '#000',
+    marginHorizontal: 15,
+  },
+  headerRight: {
+    flex: 1,
+    justifyContent: 'center',
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    textAlign: 'right',
+    textAlign: 'left',
+    marginBottom: 4,
+  },
+  date: {
+    fontSize: 11,
+    color: '#333',
+    textAlign: 'left',
   },
   section: {
     marginBottom: 15,
   },
   label: {
     fontWeight: 'bold',
-    marginRight: 5,
+    width: 120,
   },
   row: {
     flexDirection: 'row',
@@ -43,65 +66,75 @@ const styles = StyleSheet.create({
     borderBottom: '1 solid #e4e4e4',
     marginVertical: 10,
   },
+  heading: {
+    fontSize: 14,
+    marginBottom: 5,
+    fontWeight: 'bold',
+    color: '#222',
+  },
 });
 
-const TransactionPDF = ({ transaction }) => (
-  <Document>
-    <Page size="A4" style={styles.page}>
-      <View style={styles.header}>
-        <Image style={styles.logo} src="/logo.png" />
-        <Text style={styles.title}>Transaction Receipt</Text>
-      </View>
+const TransactionPDF = ({ transaction }) => {
+  const logoUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/assets/icons/logo-full.png`;
 
-      <View style={styles.section}>
-        <View style={styles.row}>
-          <Text style={styles.label}>Transaction ID:</Text>
-          <Text>{transaction.id}</Text>
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        <View style={styles.header}>
+          <Image style={styles.logo} src={logoUrl} />
+          <View style={styles.verticalLine} />
+          <View style={styles.headerRight}>
+            <Text style={styles.title}>Transaction Receipt</Text>
+            <Text style={styles.date}>
+              {new Date(transaction.createdAt).toLocaleString()}
+            </Text>
+          </View>
         </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Date:</Text>
-          <Text>{new Date(transaction.createdAt).toLocaleString()}</Text>
+
+        <View style={styles.section}>
+          <Text style={styles.heading}>Transaction Summary</Text>
+          <View style={styles.row}>
+            <Text style={styles.label}>Transaction ID:</Text>
+            <Text>{transaction.id}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Amount:</Text>
+            <Text>${transaction.amount}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Type:</Text>
+            <Text>{transaction.type}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Status:</Text>
+            <Text>{transaction.status}</Text>
+          </View>
         </View>
-      </View>
 
-      <View style={styles.divider} />
+        <View style={styles.divider} />
 
-      <View style={styles.section}>
-        <Text style={{ fontSize: 14, marginBottom: 5 }}>Details</Text>
-        <View style={styles.row}>
-          <Text style={styles.label}>Amount:</Text>
-          <Text>${transaction.amount}</Text>
+        <View style={styles.section}>
+          <Text style={styles.heading}>Sender Information</Text>
+          <Text>
+            {transaction.senderUser?.fname} {transaction.senderUser?.lname}
+          </Text>
         </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Type:</Text>
-          <Text>{transaction.type}</Text>
+
+        <View style={styles.section}>
+          <Text style={styles.heading}>Recipient Information</Text>
+          <Text>
+            {transaction.recipientUser?.fname ?? '-'}{' '}
+            {transaction.recipientUser?.lname ?? ''}
+          </Text>
         </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Status:</Text>
-          <Text>{transaction.status}</Text>
-        </View>
-      </View>
+      </Page>
+    </Document>
+  );
+};
 
-      <View style={styles.divider} />
-
-      <View style={styles.section}>
-        <Text style={{ fontSize: 14, marginBottom: 5 }}>Sender Info</Text>
-        <Text>
-          {transaction.senderUser?.fname} {transaction.senderUser?.lname}
-        </Text>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={{ fontSize: 14, marginBottom: 5 }}>Recipient Info</Text>
-        <Text>
-          {transaction.recipientUser?.fname ?? '-'} {transaction.recipientUser?.lname ?? ''}
-        </Text>
-      </View>
-    </Page>
-  </Document>
-);
 
 const TransactionPDFPage = () => {
+
   const { id } = useParams();
   const [transaction, setTransaction] = React.useState(null);
 
