@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import NavbarAside from '@/components/admin/NavbarAside';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 import Modal from "@/components/Modal";
 import toast from "react-hot-toast";
