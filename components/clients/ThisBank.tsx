@@ -91,6 +91,8 @@ const ThisBank = () => {
         setSuccessMessage('Transfer successful!');
       }
     } catch (error) {
+        console.error(error); // Use the variable
+
       setErrors(['An error occurred while processing the transfer.']);
     } finally {
       setLoading(false);
