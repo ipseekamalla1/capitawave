@@ -1,11 +1,21 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+function getTransactionId(req: NextRequest): string | null {
+  const url = new URL(req.url);
+  const segments = url.pathname.split("/");
+  return segments.pop() || segments.pop() || null; // Handles trailing slash
+}
+
 // GET /api/admin/transactions/[id]
-export async function GET(request: Request, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function GET(req: NextRequest) {
+  const id = getTransactionId(req);
+
+  if (!id) {
+    return NextResponse.json({ error: "Missing transaction ID" }, { status: 400 });
+  }
 
   try {
     const transaction = await prisma.transaction.findUnique({
@@ -28,8 +38,12 @@ export async function GET(request: Request, { params }: { params: { id: string }
 }
 
 // DELETE /api/admin/transactions/[id]
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function DELETE(req: NextRequest) {
+  const id = getTransactionId(req);
+
+  if (!id) {
+    return NextResponse.json({ error: "Missing transaction ID" }, { status: 400 });
+  }
 
   try {
     await prisma.transaction.delete({
@@ -43,20 +57,25 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   }
 }
 
+// PATCH /api/admin/transactions/[id]
+export async function PATCH(req: NextRequest) {
+  const id = getTransactionId(req);
 
-export async function PATCH(request, { params }) {
-  const { id } = params;
-  const { status } = await request.json();
+  if (!id) {
+    return NextResponse.json({ error: "Missing transaction ID" }, { status: 400 });
+  }
 
   try {
-    const transaction = await prisma.transaction.update({
+    const { status } = await req.json();
+
+    const updatedTransaction = await prisma.transaction.update({
       where: { id },
       data: { status },
     });
 
-    return NextResponse.json(transaction);
+    return NextResponse.json(updatedTransaction);
   } catch (error) {
-    console.error('Error updating transaction:', error);
-    return NextResponse.json({ error: 'Failed to update transaction' }, { status: 500 });
+    console.error("Error updating transaction:", error);
+    return NextResponse.json({ error: "Failed to update transaction" }, { status: 500 });
   }
 }
