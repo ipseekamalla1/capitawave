@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient, Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
@@ -9,7 +9,7 @@ interface Params {
 }
 
 // GET: Fetch a specific user
-export async function GET(req: Request, { params }: Params) {
+export async function GET(req: NextRequest, { params }: Params) {
   const { userId } = params;
 
   try {
@@ -29,7 +29,7 @@ export async function GET(req: Request, { params }: Params) {
 }
 
 // PUT: Update a specific user
-export async function PUT(req: Request, { params }: Params) {
+export async function PUT(req: NextRequest, { params }: Params) {
   const { userId } = params;
 
   try {
@@ -81,7 +81,7 @@ export async function PUT(req: Request, { params }: Params) {
 }
 
 // DELETE: Delete a specific user
-export async function DELETE(req: Request, { params }: Params) {
+export async function DELETE(req: NextRequest, { params }: Params) {
   const { userId } = params;
 
   try {
