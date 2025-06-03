@@ -201,13 +201,13 @@ const Accounts: React.FC = () => {
       );
     })
     .sort((a, b) => {
-      let aValue: any, bValue: any;
+      let aValue: string, bValue: string;
       if (sortConfig.key === 'name') {
         aValue = `${a.user.fname} ${a.user.lname}`.toLowerCase();
         bValue = `${b.user.fname} ${b.user.lname}`.toLowerCase();
       } else {
-        aValue = a[sortConfig.key];
-        bValue = b[sortConfig.key];
+       aValue = String(a[sortConfig.key]).toLowerCase();
+    bValue = String(b[sortConfig.key]).toLowerCase();
       }
 
       if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;

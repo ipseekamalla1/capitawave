@@ -7,8 +7,27 @@ import { Button } from "@/components/ui/button";
 import Modal from "@/components/Modal"; // Import a modal component
 import toast from "react-hot-toast";
 
+
+interface User {
+  id: string;
+  fname: string;
+  lname: string;
+  email: string;
+  username: string;
+  password?: string; // optional on edit maybe
+  street?: string;
+  state?: string;
+  zip?: string;
+  city?: string;
+  country?: string;
+  phone?: string;
+  role: string;
+  createdAt: string;
+}
+
+
 const Users = () => {
-  const [users, setUsers] = useState<any[]>([]);
+const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortConfig, setSortConfig] = useState<{
@@ -18,10 +37,10 @@ const Users = () => {
     key: "email",
     direction: "asc",
   });
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showAddUserModal, setShowAddUserModal] = useState<boolean>(false);
   const [showEditUserModal, setShowEditUserModal] = useState<boolean>(false);
-  const [userToEdit, setUserToEdit] = useState<any>(null);
+const [userToEdit, setUserToEdit] = useState<User | null>(null);
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -177,13 +196,18 @@ const Users = () => {
         user.username.toLowerCase().includes(searchQuery.toLowerCase())
     )
     .sort((a, b) => {
-      const aValue = a[sortConfig.key];
-      const bValue = b[sortConfig.key];
+  let aValue = a[sortConfig.key];
+  let bValue = b[sortConfig.key];
 
-      if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
-      if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
-      return 0;
-    });
+  if (sortConfig.key === "createdAt") {
+    aValue = new Date(aValue);
+    bValue = new Date(bValue);
+  }
+
+  if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+  if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
+  return 0;
+});
 
   // Pagination calculation
   const indexOfLastUser = currentPage * usersPerPage;
