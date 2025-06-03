@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,6 +24,20 @@ export enum FormFieldType {
   CHECKBOX = "checkbox",
   DATE_PICKER = "datePicker",
   SELECT = "select",
+});
+
+// Define types for API response
+interface User {
+  id: string;
+  role: string;
+  // add other user properties if needed
+}
+
+interface LoginResponse {
+  token: string;
+  user: User;
+  otpSent?: boolean;
+  message?: string;
 }
 
 const LoginForm = () => {
@@ -53,7 +67,7 @@ const LoginForm = () => {
         body: JSON.stringify(values),
       });
 
-      const data = await response.json();
+      const data: LoginResponse = await response.json();
 
       if (!response.ok) {
         toast.error(data.message || "Login failed.");
@@ -120,7 +134,7 @@ const LoginForm = () => {
         body: JSON.stringify({ email: emailForOtp, otp }),
       });
 
-      const data = await response.json();
+      const data: LoginResponse = await response.json();
 
       if (!response.ok) {
         toast.error(data.message || "OTP verification failed.");
@@ -137,7 +151,7 @@ const LoginForm = () => {
     }
   };
 
-  const handleLoginSuccess = (data: any) => {
+  const handleLoginSuccess = (data: LoginResponse) => {
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
     localStorage.setItem("userId", data.user.id);

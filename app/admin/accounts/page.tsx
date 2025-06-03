@@ -332,7 +332,7 @@ const Accounts: React.FC = () => {
               />
               <select
                 value={newAccount.accountType}
-                onChange={(e) => setNewAccount({ ...newAccount, accountType: e.target.value as any })}
+                onChange={(e) => setNewAccount({ ...newAccount, accountType: e.target.value as Account['accountType'] })}
                 className="w-full border p-2 rounded"
               >
                 <option value="CHECKING">CHECKING</option>
@@ -348,7 +348,7 @@ const Accounts: React.FC = () => {
               />
               <select
                 value={newAccount.status}
-                onChange={(e) => setNewAccount({ ...newAccount, status: e.target.value as any })}
+                onChange={(e) => setNewAccount({ ...newAccount, status: e.target.value as Account['status'] })}
                 className="w-full border p-2 rounded"
               >
                 <option value="ACTIVE">ACTIVE</option>

@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 // GET: Fetch all accounts with user names
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const accounts = await prisma.account.findMany({
       include: {

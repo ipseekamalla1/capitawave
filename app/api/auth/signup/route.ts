@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     // Generate verification token
     const verificationToken = randomBytes(32).toString("hex");
 
-    const newUser = await prisma.user.create({
+     await prisma.user.create({
       data: {
         fname,
         lname,

@@ -103,7 +103,7 @@ const [userToEdit, setUserToEdit] = useState<User | null>(null);
     }
   };
 
-  const handleEdit = (user: any) => {
+  const handleEdit = (user: User) => {
     setUserToEdit(user);
     setShowEditUserModal(true);
   };
@@ -185,7 +185,7 @@ const [userToEdit, setUserToEdit] = useState<User | null>(null);
     setCurrentPage(1); // Reset to page 1 after search
   };
 
-  const handleView = (user: any) => {
+  const handleView = (user: User) => {
     setSelectedUser(user);
   };
 

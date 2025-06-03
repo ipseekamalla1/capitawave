@@ -95,9 +95,14 @@ const OtherBank = () => {
       setSelectedExternalBankId('');
       setRecipientName('');
       setRecipientAccountNumber('');
-    } catch (err: any) {
-      setErrors([err.message]);
-    } finally {
+    } catch (err: unknown) {
+  if (err instanceof Error) {
+    setErrors([err.message]);
+  } else {
+    setErrors(['An unexpected error occurred']);
+  }
+}
+ finally {
       setLoading(false);
     }
   };

@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import { PrismaClient } from "@prisma/client";
 import { sendMail } from "@/lib/otp"; // Utility to send OTP emails
 
-const SECRET_KEY = process.env.JWT_SECRET_KEY || "your-secret-key";
+// const SECRET_KEY = process.env.JWT_SECRET_KEY || "your-secret-key";
 const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {

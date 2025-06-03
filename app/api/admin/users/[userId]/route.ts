@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs"; // Make sure you install it: npm install bcryptjs
+import { PrismaClient, Prisma } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -34,9 +34,22 @@ export async function PUT(req: Request, { params }: Params) {
 
   try {
     const body = await req.json();
-    const { fname, lname, email, username, password, street, state, zip, city, country, phone, role } = body;
+    const {
+      fname,
+      lname,
+      email,
+      username,
+      password,
+      street,
+      state,
+      zip,
+      city,
+      country,
+      phone,
+      role,
+    } = body;
 
-    const updatedData: any = {
+    const updatedData: Prisma.UserUpdateInput = {
       fname,
       lname,
       email,
@@ -50,9 +63,8 @@ export async function PUT(req: Request, { params }: Params) {
       role,
     };
 
-    // Only hash password if provided
     if (password) {
-      const hashedPassword = await bcrypt.hash(password, 10); 
+      const hashedPassword = await bcrypt.hash(password, 10);
       updatedData.password = hashedPassword;
     }
 
@@ -77,7 +89,7 @@ export async function DELETE(req: Request, { params }: Params) {
       where: { id: userId },
     });
 
-    return NextResponse.json({ message: "User deleted successfully" });
+    return NextResponse.json({ message: "User deleted successfully" }, { status: 200 });
   } catch (error) {
     console.error("Error deleting user:", error);
     return NextResponse.json({ message: "Error deleting user" }, { status: 500 });

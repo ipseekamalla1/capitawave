@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import UserSidebar from "@/components/clients/user-dashboard/UserSidebar";
 
-const page = () => {
+const Page = () => {
   const [userData, setUserData] = useState({
     fname: '',
     lname: '',
@@ -76,8 +76,12 @@ const page = () => {
       if (!res.ok) throw new Error(data.message || 'Failed to update user data');
 
       alert('User data updated successfully');
-    } catch (error: any) {
-      setErrors([error.message]);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setErrors([error.message]);
+      } else {
+        setErrors(['An unexpected error occurred']);
+      }
     } finally {
       setLoading(false);
     }
@@ -260,4 +264,4 @@ const page = () => {
   );
 }
 
-export default page;
+export default Page;
