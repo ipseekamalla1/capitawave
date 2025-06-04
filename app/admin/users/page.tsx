@@ -203,8 +203,8 @@ const [userToEdit, setUserToEdit] = useState<User | null>(null);
     user.username.toLowerCase().includes(searchQuery.toLowerCase())
   )
   .sort((a, b) => {
-    let aValue = a[sortConfig.key];
-    let bValue = b[sortConfig.key];
+    const aValue = a[sortConfig.key];
+    const bValue = b[sortConfig.key];
 
     // Handle date sorting
     if (sortConfig.key === "createdAt") {
