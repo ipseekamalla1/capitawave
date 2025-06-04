@@ -26,17 +26,23 @@ interface User {
 }
 
 
+interface SortConfig {
+  key: keyof User;
+  direction: "asc" | "desc";
+}
+
+
 const Users = () => {
 const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [sortConfig, setSortConfig] = useState<{
-    key: string;
-    direction: "asc" | "desc";
-  }>({
-    key: "email",
-    direction: "asc",
-  });
+ const [sortConfig, setSortConfig] = useState<{
+  key: keyof User;
+  direction: "asc" | "desc";
+}>({
+  key: "email",
+  direction: "asc",
+});
 const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showAddUserModal, setShowAddUserModal] = useState<boolean>(false);
   const [showEditUserModal, setShowEditUserModal] = useState<boolean>(false);
@@ -45,6 +51,7 @@ const [userToEdit, setUserToEdit] = useState<User | null>(null);
   // Pagination states
   const [currentPage, setCurrentPage] = useState<number>(1);
   const usersPerPage = 10;
+
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -200,19 +207,20 @@ const [userToEdit, setUserToEdit] = useState<User | null>(null);
         user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
         user.username.toLowerCase().includes(searchQuery.toLowerCase())
     )
-    .sort((a, b) => {
-  let aValue = a[sortConfig.key];
-  let bValue = b[sortConfig.key];
+   .sort((a, b) => {
+    let aValue: string | Date = a[sortConfig.key];
+    let bValue: string | Date = b[sortConfig.key];
 
-  if (sortConfig.key === "createdAt") {
-    aValue = new Date(aValue);
-    bValue = new Date(bValue);
-  }
+    if (sortConfig.key === "createdAt") {
+      aValue = new Date(aValue as string);
+      bValue = new Date(bValue as string);
+    }
 
-  if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
-  if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
-  return 0;
-});
+    if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+    if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
+    return 0;
+  });
+
 
   // Pagination calculation
   const indexOfLastUser = currentPage * usersPerPage;
