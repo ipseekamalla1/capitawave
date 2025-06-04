@@ -26,10 +26,6 @@ interface User {
 }
 
 
-interface SortConfig {
-  key: keyof User;
-  direction: "asc" | "desc";
-}
 
 
 const Users = () => {
@@ -202,23 +198,33 @@ const [userToEdit, setUserToEdit] = useState<User | null>(null);
   };
 
   const filteredUsers = users
-    .filter(
-      (user) =>
-        user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.username.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-   .sort((a, b) => {
-    let aValue: string | Date = a[sortConfig.key];
-    let bValue: string | Date = b[sortConfig.key];
+  .filter((user) =>
+    user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.username.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+  .sort((a, b) => {
+    let aValue = a[sortConfig.key];
+    let bValue = b[sortConfig.key];
 
+    // Handle date sorting
     if (sortConfig.key === "createdAt") {
-      aValue = new Date(aValue as string);
-      bValue = new Date(bValue as string);
+      const dateA = new Date(aValue as string | Date);
+      const dateB = new Date(bValue as string | Date);
+      return sortConfig.direction === "asc"
+        ? dateA.getTime() - dateB.getTime()
+        : dateB.getTime() - dateA.getTime();
     }
 
-    if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
-    if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
-    return 0;
+    // For string values, do a localeCompare
+    if (typeof aValue === "string" && typeof bValue === "string") {
+      return sortConfig.direction === "asc"
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue);
+    }
+
+    // Add handling for numbers or other types as needed
+
+    return 0; // default fallback
   });
 
 
