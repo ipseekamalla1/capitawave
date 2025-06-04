@@ -126,6 +126,11 @@ const [userToEdit, setUserToEdit] = useState<User | null>(null);
       phone: formData.get("phone"),
       role: formData.get("role"),
     };
+    if (!userToEdit) {
+    toast.error("No user selected for editing.");
+    return;
+  }
+
     console.log(updatedUser);
     try {
       const response = await fetch(`/api/admin/users/${userToEdit.id}`, {
