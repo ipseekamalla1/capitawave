@@ -12,6 +12,22 @@ import {
   Image,
 } from '@react-pdf/renderer';
 
+// Define User and Transaction types
+type User = {
+  fname: string;
+  lname: string;
+};
+
+type Transaction = {
+  id: number;
+  amount: number;
+  type: string;
+  status: string;
+  createdAt: string;
+  senderUser?: User;
+  recipientUser?: User;
+};
+
 const styles = StyleSheet.create({
   page: {
     padding: 40,
@@ -74,8 +90,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const TransactionPDF = ({ transaction }) => {
-  const logoUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/assets/icons/logo-full.png`;
+// Type the props for TransactionPDF component
+const TransactionPDF = ({ transaction }: { transaction: Transaction }) => {
+  const logoUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/assets/icons/logo-full.png`
+      : '';
 
   return (
     <Document>
@@ -132,16 +152,21 @@ const TransactionPDF = ({ transaction }) => {
   );
 };
 
-
 const TransactionPDFPage = () => {
-
   const { id } = useParams();
-  const [transaction, setTransaction] = React.useState(null);
+  const [transaction, setTransaction] = React.useState<Transaction | null>(null);
 
   React.useEffect(() => {
+    if (!id) return;
     fetch(`/api/admin/transactions/${id}`)
-      .then((res) => res.json())
-      .then(setTransaction);
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch transaction');
+        return res.json();
+      })
+      .then(setTransaction)
+      .catch((error) => {
+        console.error('Error fetching transaction:', error);
+      });
   }, [id]);
 
   if (!transaction) return <p>Loading...</p>;
