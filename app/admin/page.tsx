@@ -5,10 +5,35 @@ import Head from 'next/head';
 import { FaUsers, FaExchangeAlt, FaWallet } from 'react-icons/fa';
 import NavbarAside from '@/components/admin/NavbarAside';
 
+type User = {
+  id: number;
+  fname: string;
+  email: string;
+  username: string;
+  role: string;
+};
+
+type Transaction = {
+  id: number;
+  amount: number;
+  type: string;
+  status: string;
+  createdAt: string;
+};
+
+type Account = {
+  accountNumber: string;
+  accountType: string;
+  balance: number;
+  status: string;
+};
+
+
+
 export default function Admin() {
-  const [users, setUsers] = useState([]);
-  const [transactions, setTransactions] = useState([]);
-  const [accounts, setAccounts] = useState([]);
+ const [users, setUsers] = useState<User[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [accounts, setAccounts] = useState<Account[]>([]);
   
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [loadingTransactions, setLoadingTransactions] = useState(true);
