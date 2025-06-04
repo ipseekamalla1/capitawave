@@ -4,11 +4,12 @@ import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
+// GET a user by ID
 export async function GET(
   req: NextRequest,
-  context: { params: { userId: string } }
+  { params }: { params: { userId: string } }
 ) {
-  const { userId } = context.params;
+  const { userId } = params;
 
   try {
     const user = await prisma.user.findUnique({
@@ -26,11 +27,12 @@ export async function GET(
   }
 }
 
+// UPDATE a user by ID
 export async function PUT(
   req: NextRequest,
-  context: { params: { userId: string } }
+  { params }: { params: { userId: string } }
 ) {
-  const { userId } = context.params;
+  const { userId } = params;
 
   try {
     const body = await req.json();
@@ -80,11 +82,12 @@ export async function PUT(
   }
 }
 
+// DELETE a user by ID
 export async function DELETE(
   req: NextRequest,
-  context: { params: { userId: string } }
+  { params }: { params: { userId: string } }
 ) {
-  const { userId } = context.params;
+  const { userId } = params;
 
   try {
     await prisma.user.delete({
