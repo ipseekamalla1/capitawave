@@ -15,7 +15,6 @@ export default function Admin() {
   const [loadingAccounts, setLoadingAccounts] = useState(true);
 
   useEffect(() => {
-    // Fetch Users
     const fetchUsers = async () => {
       try {
         const response = await fetch('/api/admin/users');
@@ -29,7 +28,6 @@ export default function Admin() {
       }
     };
 
-    // Fetch Transactions
     const fetchTransactions = async () => {
       try {
         const response = await fetch('/api/admin/transactions');
@@ -43,7 +41,6 @@ export default function Admin() {
       }
     };
 
-    // Fetch Accounts
     const fetchAccounts = async () => {
       try {
         const response = await fetch('/api/admin/accounts');
@@ -116,13 +113,13 @@ export default function Admin() {
                 <tbody>
                   {loadingUsers ? (
                     <tr>
-                      <td colSpan="4" className="py-4 px-4 text-center text-gray-500">
+                      <td colSpan={4} className="py-4 px-4 text-center text-gray-500">
                         Loading users...
                       </td>
                     </tr>
                   ) : users.length === 0 ? (
                     <tr>
-                      <td colSpan="4" className="py-4 px-4 text-center text-gray-500">
+                      <td colSpan={4} className="py-4 px-4 text-center text-gray-500">
                         No users found.
                       </td>
                     </tr>
@@ -158,13 +155,13 @@ export default function Admin() {
                 <tbody>
                   {loadingTransactions ? (
                     <tr>
-                      <td colSpan="5" className="py-4 px-4 text-center text-gray-500">
+                      <td colSpan={5} className="py-4 px-4 text-center text-gray-500">
                         Loading transactions...
                       </td>
                     </tr>
                   ) : transactions.length === 0 ? (
                     <tr>
-                      <td colSpan="5" className="py-4 px-4 text-center text-gray-500">
+                      <td colSpan={5} className="py-4 px-4 text-center text-gray-500">
                         No transactions found.
                       </td>
                     </tr>
@@ -176,17 +173,17 @@ export default function Admin() {
                         <td className="py-2 px-4">{tx.type}</td>
                         <td className="py-2 px-4">{tx.status}</td>
                         <td className="py-2 px-4">
-  {new Date(tx.createdAt).toLocaleString('en-US', {
-    weekday: 'short', // 'short' or 'long'
-    year: 'numeric', 
-    month: 'short', // 'short' or 'long'
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric',
-    hour12: true, // true for AM/PM format
-  })}
-</td>
+                          {new Date(tx.createdAt).toLocaleString('en-US', {
+                            weekday: 'short',
+                            year: 'numeric', 
+                            month: 'short',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            second: 'numeric',
+                            hour12: true,
+                          })}
+                        </td>
                       </tr>
                     ))
                   )}
@@ -211,13 +208,13 @@ export default function Admin() {
                 <tbody>
                   {loadingAccounts ? (
                     <tr>
-                      <td colSpan="4" className="py-4 px-4 text-center text-gray-500">
+                      <td colSpan={4} className="py-4 px-4 text-center text-gray-500">
                         Loading accounts...
                       </td>
                     </tr>
                   ) : accounts.length === 0 ? (
                     <tr>
-                      <td colSpan="4" className="py-4 px-4 text-center text-gray-500">
+                      <td colSpan={4} className="py-4 px-4 text-center text-gray-500">
                         No accounts found.
                       </td>
                     </tr>
